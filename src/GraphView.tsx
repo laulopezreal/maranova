@@ -123,8 +123,9 @@ const GraphView = ({ data = sampleData, width = 800, height = 600 }: GraphViewPr
       .attr("class", "nodes")
       .selectAll("g")
       .data(data.nodes)
-      .join("g")
-      .call(d3.drag<SVGGElement, Node>()
+      .join("g") as d3.Selection<SVGGElement, Node, SVGGElement, unknown>;
+
+    node.call(d3.drag<SVGGElement, Node>()
         .on("start", dragstarted)
         .on("drag", dragged)
         .on("end", dragended));
@@ -137,7 +138,7 @@ const GraphView = ({ data = sampleData, width = 800, height = 600 }: GraphViewPr
       .attr("stroke-width", 2)
       .attr("filter", "drop-shadow(0 0 10px rgba(167, 139, 250, 0.5))")
       .style("cursor", "grab")
-      .on("mouseenter", function(event, d) {
+      .on("mouseenter", function(_event, d) {
         d3.select(this)
           .transition()
           .duration(200)
@@ -145,7 +146,7 @@ const GraphView = ({ data = sampleData, width = 800, height = 600 }: GraphViewPr
           .attr("filter", "drop-shadow(0 0 20px rgba(167, 139, 250, 0.8))");
         setHoveredNode(d.id);
       })
-      .on("mouseleave", function(event, d) {
+      .on("mouseleave", function(_event, d) {
         d3.select(this)
           .transition()
           .duration(200)
