@@ -123,7 +123,7 @@ export function AuthProvider({ children }: { children: ReactNode }) {
     await fetch(`/api/auth/logout`, {
       method: 'POST',
       headers: { Authorization: `Bearer ${session.accessToken}` },
-    }).catch(() => {})
+    }).catch((error) => console.error('Logout failed:', error))
     setSession(null)
   }
 
