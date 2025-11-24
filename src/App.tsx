@@ -1,5 +1,6 @@
 import { type MouseEvent, useEffect, useState } from 'react'
 import { AnimatePresence, motion, useMotionValue, useTransform, animate } from 'framer-motion'
+import GraphView from './GraphView'
 import './App.css'
 import { mockBookmarkTree, type BookmarkNode } from './mockData'
 import { BookmarkCard } from './BookmarkCard'
@@ -231,6 +232,11 @@ function App() {
                       <ViewSwitcher currentView={viewMode} onViewChange={setViewMode} />
                     </div>
 
+                    {viewMode === 'graph' ? (
+                      <div className="h-[600px] rounded-xl overflow-hidden border border-white/5">
+                        <GraphView width={1000} height={600} />
+                      </div>
+                    ) : (
                     <section className={viewMode === 'grid' ? 'grid gap-4 sm:grid-cols-2 lg:grid-cols-3' : 'flex flex-col gap-3'}>
                       {(() => {
                         const currentFolder = findNode(mockBookmarkTree, currentFolderId)
@@ -321,6 +327,7 @@ function App() {
                         })
                       })()}
                     </section>
+                    )}
                   </div>
                 </div>
 
@@ -402,6 +409,5 @@ function App() {
     </motion.div>
   )
 }
-
 
 export default App
