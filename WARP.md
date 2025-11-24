@@ -15,6 +15,7 @@ This is currently an MVP with mocked bookmark data. Chrome bookmarks integration
 ### Development
 ```bash
 npm run dev          # Start Vite dev server with HMR
+npm run server       # Start the auth API server
 npm run build        # Type-check with tsc and build for production
 npm run preview      # Preview production build locally
 npm run lint         # Run ESLint on all files
