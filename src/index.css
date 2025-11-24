@@ -1,3 +1,18 @@
-@tailwind base;
-@tailwind components;
-@tailwind utilities;
+@import url('https://fonts.googleapis.com/css2?family=Outfit:wght@300;400;500;600;700&display=swap');
+@import 'tailwindcss/index.css';
+
+@config '../tailwind.config.js';
+
+:root {
+  --font-sans: 'Outfit', sans-serif;
+  
+  /* Glass System */
+  --glass-border: rgba(255, 255, 255, 0.08);
+  --glass-surface: rgba(255, 255, 255, 0.03);
+  --glass-highlight: rgba(255, 255, 255, 0.12);
+  --glass-shadow: 0 20px 40px rgba(0, 0, 0, 0.25);
+  
+  /* Gradients */
+  --gradient-galaxy: radial-gradient(circle at top left, #2e1065, #0f172a);
+  --gradient-ocean: radial-gradient(circle at top left, #083344, #0f172a);
+}
