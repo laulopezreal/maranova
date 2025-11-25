@@ -251,7 +251,7 @@ function App() {
                         // or maybe global search is better? 
                         // Let's do: if search query exists, show flat list of ALL matching bookmarks.
 
-                        let displayNodes = [...folders, ...bookmarks]
+                        const displayNodes = [...folders, ...bookmarks]
 
                         if (searchQuery) {
                           const flatten = (nodes: BookmarkNode[]): BookmarkNode[] => {
