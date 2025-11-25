@@ -58,6 +58,7 @@ interface Node {
 interface Link {
   source: string;      // Source node ID
   target: string;      // Target node ID
+  value?: number;      // Optional: influences link strength
 }
 
 interface GraphData {
