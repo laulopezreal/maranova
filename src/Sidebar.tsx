@@ -10,7 +10,7 @@ type SidebarProps = {
 
 export function Sidebar({ nodes, currentFolderId, onSelectFolder }: SidebarProps) {
     return (
-        <aside className="hidden w-64 flex-col gap-2 border-r border-white/5 bg-white/[0.02] p-4 md:flex">
+        <aside className="relative z-20 hidden w-64 flex-col gap-2 border-r border-white/5 bg-white/[0.02] p-4 backdrop-blur-xl md:flex">
             <div className="flex flex-col gap-1">
                 {nodes.map((node) => (
                     <FolderItem
