@@ -14,9 +14,10 @@ interface GraphViewProps {
   width?: number;
   height?: number;
   focusNodeId?: string;
+  onNodeClick?: (nodeId: string) => void;
 }
 
-const GraphView = ({ data, width = 800, height = 600, focusNodeId }: GraphViewProps) => {
+const GraphView = ({ data, width = 800, height = 600, focusNodeId, onNodeClick }: GraphViewProps) => {
   const svgRef = useRef<SVGSVGElement>(null);
   const [hoveredNode, setHoveredNode] = useState<string | null>(null);
   const zoomRef = useRef<d3.ZoomBehavior<SVGSVGElement, unknown> | null>(null);
@@ -101,7 +102,13 @@ const GraphView = ({ data, width = 800, height = 600, focusNodeId }: GraphViewPr
       .attr("stroke", "#ffffff")
       .attr("stroke-width", 3)
       .attr("filter", "drop-shadow(0 0 10px rgba(167, 139, 250, 0.5))")
-      .style("cursor", "grab")
+      .style("cursor", "pointer")
+      .on("click", function(_event, d) {
+        _event.stopPropagation();
+        if (onNodeClick) {
+          onNodeClick(d.id);
+        }
+      })
       .on("mouseenter", function(_event, d) {
         d3.select(this)
           .transition()
