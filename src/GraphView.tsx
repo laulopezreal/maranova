@@ -94,7 +94,7 @@ const GraphView = ({ data, width = 800, height = 600 }: GraphViewProps) => {
     // Add circles to nodes
     node.append("circle")
       .attr("r", d => d.size)
-      .attr("fill", d => d.group ? colorScale(d.group.toString()) : "url(#node-gradient)")
+      .attr("fill", "transparent")
       .attr("stroke", "#ffffff")
       .attr("stroke-width", 3)
       .attr("filter", "drop-shadow(0 0 10px rgba(167, 139, 250, 0.5))")
