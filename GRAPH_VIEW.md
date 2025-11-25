@@ -50,7 +50,7 @@ An interactive force-directed graph visualization inspired by [this CodePen](htt
 
 ```typescript
 interface Node {
-  id: string;          // Display name
+  id: string;          // Unique identifier
   size: number;        // Radius in pixels
   group?: number;      // Color group
 }
