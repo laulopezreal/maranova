@@ -20,6 +20,7 @@ interface GraphViewProps {
 const GraphView = ({ data, width = 800, height = 600, focusNodeId, onNodeClick }: GraphViewProps) => {
   const svgRef = useRef<SVGSVGElement>(null);
   const [hoveredNode, setHoveredNode] = useState<string | null>(null);
+  const hoveredIdsRef = useRef<Set<string>>(new Set());
   const zoomRef = useRef<d3.ZoomBehavior<SVGSVGElement, unknown> | null>(null);
   const simulationRef = useRef<d3.Simulation<Node, Link> | null>(null);
 
@@ -99,7 +100,7 @@ const GraphView = ({ data, width = 800, height = 600, focusNodeId, onNodeClick }
     node.append("circle")
       .attr("r", d => d.size)
       .attr("fill", "transparent")
-      .attr("stroke", "#ffffff")
+      .attr("stroke", d => d.type === 'folder' ? '#ffea00' : '#ffffff')
       .attr("stroke-width", 3)
       .attr("filter", "drop-shadow(0 0 10px rgba(167, 139, 250, 0.5))")
       .style("cursor", "pointer")
@@ -110,19 +111,23 @@ const GraphView = ({ data, width = 800, height = 600, focusNodeId, onNodeClick }
         }
       })
       .on("mouseenter", function(_event, d) {
+        hoveredIdsRef.current.add(d.id);
         d3.select(this)
           .transition()
           .duration(200)
           .attr("r", d.size * 1.2)
           .attr("filter", "drop-shadow(0 0 20px rgba(167, 139, 250, 0.8))");
+        simulationRef.current?.alpha(0.08).restart();
         setHoveredNode(d.title);
       })
       .on("mouseleave", function(_event, d) {
+        hoveredIdsRef.current.delete(d.id);
         d3.select(this)
           .transition()
           .duration(200)
           .attr("r", d.size)
           .attr("filter", "drop-shadow(0 0 10px rgba(167, 139, 250, 0.5))");
+        simulationRef.current?.alpha(0.05).restart();
         setHoveredNode(null);
       });
 
@@ -131,7 +136,7 @@ const GraphView = ({ data, width = 800, height = 600, focusNodeId, onNodeClick }
       .text(d => d.title)
       .attr("text-anchor", "middle")
       .attr("dominant-baseline", "central")
-      .attr("fill", "#ffffff")
+      .attr("fill", d => d.type === 'folder' ? '#ffea00' : '#ffffff')
       .attr("font-size", "12px")
       .attr("font-weight", "500")
       .attr("pointer-events", "none")
@@ -163,7 +168,8 @@ const GraphView = ({ data, width = 800, height = 600, focusNodeId, onNodeClick }
           const dx = (target.x || 0) - (source.x || 0);
           const dy = (target.y || 0) - (source.y || 0);
           const distance = Math.sqrt(dx * dx + dy * dy);
-          const ratio = source.size / distance;
+          const srcScale = hoveredIdsRef.current.has(source.id) ? 1.2 : 1;
+          const ratio = (source.size * srcScale) / distance;
           return (source.x || 0) + dx * ratio;
         })
         .attr("y1", d => {
@@ -173,7 +179,8 @@ const GraphView = ({ data, width = 800, height = 600, focusNodeId, onNodeClick }
           const dx = (target.x || 0) - (source.x || 0);
           const dy = (target.y || 0) - (source.y || 0);
           const distance = Math.sqrt(dx * dx + dy * dy);
-          const ratio = source.size / distance;
+          const srcScale = hoveredIdsRef.current.has(source.id) ? 1.2 : 1;
+          const ratio = (source.size * srcScale) / distance;
           return (source.y || 0) + dy * ratio;
         })
         .attr("x2", d => {
@@ -183,7 +190,8 @@ const GraphView = ({ data, width = 800, height = 600, focusNodeId, onNodeClick }
           const dx = (target.x || 0) - (source.x || 0);
           const dy = (target.y || 0) - (source.y || 0);
           const distance = Math.sqrt(dx * dx + dy * dy);
-          const ratio = target.size / distance;
+          const tgtScale = hoveredIdsRef.current.has(target.id) ? 1.2 : 1;
+          const ratio = (target.size * tgtScale) / distance;
           return (target.x || 0) - dx * ratio;
         })
         .attr("y2", d => {
@@ -193,7 +201,8 @@ const GraphView = ({ data, width = 800, height = 600, focusNodeId, onNodeClick }
           const dx = (target.x || 0) - (source.x || 0);
           const dy = (target.y || 0) - (source.y || 0);
           const distance = Math.sqrt(dx * dx + dy * dy);
-          const ratio = target.size / distance;
+          const tgtScale = hoveredIdsRef.current.has(target.id) ? 1.2 : 1;
+          const ratio = (target.size * tgtScale) / distance;
           return (target.y || 0) - dy * ratio;
         });
 
