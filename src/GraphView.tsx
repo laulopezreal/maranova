@@ -263,7 +263,7 @@ const GraphView = ({ data, width = 800, height = 600, focusNodeId, onNodeClick }
   }, [focusNodeId, data.nodes, width, height]);
 
   return (
-    <div className="relative w-full h-full flex items-center justify-center bg-[#001f3f]">
+    <div className="relative w-full h-full flex items-center justify-center">
       <svg 
         ref={svgRef} 
         className="w-full h-full"
