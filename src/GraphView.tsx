@@ -1,60 +1,21 @@
 import { useEffect, useRef, useState } from 'react';
 import * as d3 from 'd3';
+import type { GraphData, GraphNode as BaseGraphNode } from './utils/bookmarkToGraph';
 
-interface Node extends d3.SimulationNodeDatum {
-  id: string;
-  size: number;
-  group?: number;
-}
+interface Node extends d3.SimulationNodeDatum, BaseGraphNode {}
 
 interface Link extends d3.SimulationLinkDatum<Node> {
   source: string | Node;
   target: string | Node;
-  value?: number;
 }
-
-interface GraphData {
-  nodes: Node[];
-  links: Link[];
-}
-
-// Sample data structure - can be replaced with your bookmark data
-const sampleData: GraphData = {
-  nodes: [
-    { id: "Development", size: 40, group: 1 },
-    { id: "React", size: 30, group: 1 },
-    { id: "TypeScript", size: 30, group: 1 },
-    { id: "Design", size: 40, group: 2 },
-    { id: "Figma", size: 25, group: 2 },
-    { id: "Adobe XD", size: 25, group: 2 },
-    { id: "Resources", size: 40, group: 3 },
-    { id: "Documentation", size: 30, group: 3 },
-    { id: "Tutorials", size: 30, group: 3 },
-    { id: "Tools", size: 35, group: 4 },
-    { id: "VS Code", size: 25, group: 4 },
-    { id: "Git", size: 25, group: 4 },
-  ],
-  links: [
-    { source: "Development", target: "React" },
-    { source: "Development", target: "TypeScript" },
-    { source: "Design", target: "Figma" },
-    { source: "Design", target: "Adobe XD" },
-    { source: "Resources", target: "Documentation" },
-    { source: "Resources", target: "Tutorials" },
-    { source: "Tools", target: "VS Code" },
-    { source: "Tools", target: "Git" },
-    { source: "Development", target: "Tools" },
-    { source: "Design", target: "Resources" },
-  ]
-};
 
 interface GraphViewProps {
-  data?: GraphData;
+  data: GraphData;
   width?: number;
   height?: number;
 }
 
-const GraphView = ({ data = sampleData, width = 800, height = 600 }: GraphViewProps) => {
+const GraphView = ({ data, width = 800, height = 600 }: GraphViewProps) => {
   const svgRef = useRef<SVGSVGElement>(null);
   const [hoveredNode, setHoveredNode] = useState<string | null>(null);
 
@@ -88,8 +49,8 @@ const GraphView = ({ data = sampleData, width = 800, height = 600 }: GraphViewPr
     const colorScale = d3.scaleOrdinal(d3.schemeCategory10);
 
     // Create force simulation
-    const simulation = d3.forceSimulation<Node>(data.nodes)
-      .force("link", d3.forceLink<Node, Link>(data.links)
+    const simulation = d3.forceSimulation<Node>(data.nodes as Node[])
+      .force("link", d3.forceLink<Node, Link>(data.links as Link[])
         .id(d => d.id)
         .distance(100))
       .force("charge", d3.forceManyBody().strength(-300))
@@ -144,7 +105,7 @@ const GraphView = ({ data = sampleData, width = 800, height = 600 }: GraphViewPr
           .duration(200)
           .attr("r", d.size * 1.2)
           .attr("filter", "drop-shadow(0 0 20px rgba(167, 139, 250, 0.8))");
-        setHoveredNode(d.id);
+        setHoveredNode(d.title);
       })
       .on("mouseleave", function(_event, d) {
         d3.select(this)
@@ -157,7 +118,7 @@ const GraphView = ({ data = sampleData, width = 800, height = 600 }: GraphViewPr
 
     // Add text labels
     node.append("text")
-      .text(d => d.id)
+      .text(d => d.title)
       .attr("text-anchor", "middle")
       .attr("dominant-baseline", "central")
       .attr("fill", "#ffffff")
@@ -168,10 +129,10 @@ const GraphView = ({ data = sampleData, width = 800, height = 600 }: GraphViewPr
       .each(function(d) {
         // Split text into multiple lines if needed
         const text = d3.select(this);
-        const words = d.id.split(/\s+/);
+        const words = d.title.split(/\s+/);
         const maxLength = Math.floor((d.size - 16) * 2 / 8);
         
-        if (d.id.length > maxLength && words.length > 1) {
+        if (d.title.length > maxLength && words.length > 1) {
           text.text(null);
           words.forEach((word, i) => {
             text.append("tspan")
@@ -185,10 +146,22 @@ const GraphView = ({ data = sampleData, width = 800, height = 600 }: GraphViewPr
     // Update positions on each tick
     simulation.on("tick", () => {
       link
-        .attr("x1", d => (d.source as Node).x || 0)
-        .attr("y1", d => (d.source as Node).y || 0)
-        .attr("x2", d => (d.target as Node).x || 0)
-        .attr("y2", d => (d.target as Node).y || 0);
+        .attr("x1", d => {
+          const source = (typeof d.source === 'string' ? data.nodes.find(n => n.id === d.source) : d.source) as Node;
+          return source?.x || 0;
+        })
+        .attr("y1", d => {
+          const source = (typeof d.source === 'string' ? data.nodes.find(n => n.id === d.source) : d.source) as Node;
+          return source?.y || 0;
+        })
+        .attr("x2", d => {
+          const target = (typeof d.target === 'string' ? data.nodes.find(n => n.id === d.target) : d.target) as Node;
+          return target?.x || 0;
+        })
+        .attr("y2", d => {
+          const target = (typeof d.target === 'string' ? data.nodes.find(n => n.id === d.target) : d.target) as Node;
+          return target?.y || 0;
+        });
 
       node.attr("transform", d => `translate(${d.x},${d.y})`);
     });
