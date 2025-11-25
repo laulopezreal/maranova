@@ -148,19 +148,43 @@ const GraphView = ({ data, width = 800, height = 600 }: GraphViewProps) => {
       link
         .attr("x1", d => {
           const source = (typeof d.source === 'string' ? data.nodes.find(n => n.id === d.source) : d.source) as Node;
-          return source?.x || 0;
+          const target = (typeof d.target === 'string' ? data.nodes.find(n => n.id === d.target) : d.target) as Node;
+          if (!source || !target) return 0;
+          const dx = (target.x || 0) - (source.x || 0);
+          const dy = (target.y || 0) - (source.y || 0);
+          const distance = Math.sqrt(dx * dx + dy * dy);
+          const ratio = source.size / distance;
+          return (source.x || 0) + dx * ratio;
         })
         .attr("y1", d => {
           const source = (typeof d.source === 'string' ? data.nodes.find(n => n.id === d.source) : d.source) as Node;
-          return source?.y || 0;
+          const target = (typeof d.target === 'string' ? data.nodes.find(n => n.id === d.target) : d.target) as Node;
+          if (!source || !target) return 0;
+          const dx = (target.x || 0) - (source.x || 0);
+          const dy = (target.y || 0) - (source.y || 0);
+          const distance = Math.sqrt(dx * dx + dy * dy);
+          const ratio = source.size / distance;
+          return (source.y || 0) + dy * ratio;
         })
         .attr("x2", d => {
+          const source = (typeof d.source === 'string' ? data.nodes.find(n => n.id === d.source) : d.source) as Node;
           const target = (typeof d.target === 'string' ? data.nodes.find(n => n.id === d.target) : d.target) as Node;
-          return target?.x || 0;
+          if (!source || !target) return 0;
+          const dx = (target.x || 0) - (source.x || 0);
+          const dy = (target.y || 0) - (source.y || 0);
+          const distance = Math.sqrt(dx * dx + dy * dy);
+          const ratio = target.size / distance;
+          return (target.x || 0) - dx * ratio;
         })
         .attr("y2", d => {
+          const source = (typeof d.source === 'string' ? data.nodes.find(n => n.id === d.source) : d.source) as Node;
           const target = (typeof d.target === 'string' ? data.nodes.find(n => n.id === d.target) : d.target) as Node;
-          return target?.y || 0;
+          if (!source || !target) return 0;
+          const dx = (target.x || 0) - (source.x || 0);
+          const dy = (target.y || 0) - (source.y || 0);
+          const distance = Math.sqrt(dx * dx + dy * dy);
+          const ratio = target.size / distance;
+          return (target.y || 0) - dy * ratio;
         });
 
       node.attr("transform", d => `translate(${d.x},${d.y})`);
