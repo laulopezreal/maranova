@@ -61,7 +61,7 @@ function App() {
   // start progress animation on mount
   useEffect(() => {
     animate(progress, 100, { duration: 7, ease: 'linear' })
-  }, [])
+  }, [progress])
 
   useEffect(() => {
     const handleHash = () => setPage(getPageFromHash())

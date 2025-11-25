@@ -3,6 +3,7 @@ import {
   useContext,
   useEffect,
   useMemo,
+  useCallback,
   useState,
   type ReactNode,
 } from 'react'
@@ -74,7 +75,7 @@ export function AuthProvider({ children }: { children: ReactNode }) {
     }
   }, [session])
 
-  const login = async (provider: ProviderId) => {
+  const login = useCallback(async (provider: ProviderId) => {
     if (status === 'authenticating') return
     setStatus('authenticating')
     const verifier = generateVerifier()
@@ -116,16 +117,16 @@ export function AuthProvider({ children }: { children: ReactNode }) {
       setStatus('idle')
       if (popup) popup.close()
     }
-  }
+  }, [status])
 
-  const logout = async () => {
+  const logout = useCallback(async () => {
     if (!session) return
     await fetch(`/api/auth/logout`, {
       method: 'POST',
       headers: { Authorization: `Bearer ${session.accessToken}` },
     }).catch((error) => console.error('Logout failed:', error))
     setSession(null)
-  }
+  }, [session])
 
   const value = useMemo<AuthContextValue>(
     () => ({
@@ -197,6 +198,7 @@ async function fetchProfile(accessToken: string): Promise<UserProfile> {
   return (await res.json()) as UserProfile
 }
 
+// eslint-disable-next-line react-refresh/only-export-components
 export function useAuth() {
   const ctx = useContext(AuthContext)
   if (!ctx) {
