@@ -237,8 +237,8 @@ function App() {
                     </div>
 
                     {viewMode === 'graph' ? (
-                      <div className="h-[600px] rounded-xl overflow-hidden border border-white/5">
-                        <GraphView 
+                      <div className="h-[600px] rounded-xl overflow-hidden border border-white/5 bg-white/[0.02] backdrop-blur-xl">
+                        <GraphView
                           data={graphData} 
                           width={1000} 
                           height={600} 
@@ -247,7 +247,7 @@ function App() {
                         />
                       </div>
                     ) : (
-                    <section className={viewMode === 'grid' ? 'grid gap-4 sm:grid-cols-2 lg:grid-cols-3' : 'flex flex-col gap-3'}>
+                    <section className={`backdrop-blur-xl rounded-xl border border-white/5 bg-white/[0.02] p-4 ${viewMode === 'grid' ? 'grid gap-4 sm:grid-cols-2 lg:grid-cols-3' : 'flex flex-col gap-3'}`}>
                       {(() => {
                         const currentFolder = findNode(mockBookmarkTree, currentFolderId)
                         const bookmarks = currentFolder?.children?.filter((c) => c.type === 'bookmark') || []
