@@ -238,7 +238,13 @@ function App() {
 
                     {viewMode === 'graph' ? (
                       <div className="h-[600px] rounded-xl overflow-hidden border border-white/5">
-                        <GraphView data={graphData} width={1000} height={600} focusNodeId={currentFolderId} />
+                        <GraphView 
+                          data={graphData} 
+                          width={1000} 
+                          height={600} 
+                          focusNodeId={currentFolderId}
+                          onNodeClick={setCurrentFolderId}
+                        />
                       </div>
                     ) : (
                     <section className={viewMode === 'grid' ? 'grid gap-4 sm:grid-cols-2 lg:grid-cols-3' : 'flex flex-col gap-3'}>
