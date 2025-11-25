@@ -96,7 +96,7 @@ const GraphView = ({ data, width = 800, height = 600 }: GraphViewProps) => {
       .attr("r", d => d.size)
       .attr("fill", d => d.group ? colorScale(d.group.toString()) : "url(#node-gradient)")
       .attr("stroke", "#ffffff")
-      .attr("stroke-width", 2)
+      .attr("stroke-width", 3)
       .attr("filter", "drop-shadow(0 0 10px rgba(167, 139, 250, 0.5))")
       .style("cursor", "grab")
       .on("mouseenter", function(_event, d) {
@@ -193,7 +193,7 @@ const GraphView = ({ data, width = 800, height = 600 }: GraphViewProps) => {
   }, [data, width, height]);
 
   return (
-    <div className="relative w-full h-full flex items-center justify-center bg-gradient-to-br from-slate-900 via-purple-900 to-slate-900">
+    <div className="relative w-full h-full flex items-center justify-center bg-[#001f3f]">
       <svg 
         ref={svgRef} 
         className="w-full h-full"
