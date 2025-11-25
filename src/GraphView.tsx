@@ -13,11 +13,14 @@ interface GraphViewProps {
   data: GraphData;
   width?: number;
   height?: number;
+  focusNodeId?: string;
 }
 
-const GraphView = ({ data, width = 800, height = 600 }: GraphViewProps) => {
+const GraphView = ({ data, width = 800, height = 600, focusNodeId }: GraphViewProps) => {
   const svgRef = useRef<SVGSVGElement>(null);
   const [hoveredNode, setHoveredNode] = useState<string | null>(null);
+  const zoomRef = useRef<d3.ZoomBehavior<SVGSVGElement, unknown> | null>(null);
+  const simulationRef = useRef<d3.Simulation<Node, Link> | null>(null);
 
   useEffect(() => {
     if (!svgRef.current) return;
@@ -45,9 +48,6 @@ const GraphView = ({ data, width = 800, height = 600 }: GraphViewProps) => {
       .attr("stop-color", "#7c3aed")
       .attr("stop-opacity", 0.4);
 
-    // Color scale based on groups
-    const colorScale = d3.scaleOrdinal(d3.schemeCategory10);
-
     // Create force simulation
     const simulation = d3.forceSimulation<Node>(data.nodes as Node[])
       .force("link", d3.forceLink<Node, Link>(data.links as Link[])
@@ -56,6 +56,8 @@ const GraphView = ({ data, width = 800, height = 600 }: GraphViewProps) => {
       .force("charge", d3.forceManyBody().strength(-300))
       .force("center", d3.forceCenter(width / 2, height / 2))
       .force("collision", d3.forceCollide().radius(d => (d as Node).size + 10));
+
+    simulationRef.current = simulation;
 
     // Create container for zoom
     const container = svg.append("g");
@@ -68,6 +70,7 @@ const GraphView = ({ data, width = 800, height = 600 }: GraphViewProps) => {
       });
 
     svg.call(zoom);
+    zoomRef.current = zoom;
 
     // Create links
     const link = container.append("g")
@@ -215,6 +218,33 @@ const GraphView = ({ data, width = 800, height = 600 }: GraphViewProps) => {
       simulation.stop();
     };
   }, [data, width, height]);
+
+  // Handle focus on selected node
+  useEffect(() => {
+    if (!focusNodeId || !svgRef.current || !zoomRef.current || !simulationRef.current) return;
+
+    const focusNode = data.nodes.find(n => n.id === focusNodeId);
+    if (!focusNode) return;
+
+    // Wait for simulation to stabilize a bit
+    const timer = setTimeout(() => {
+      const node = simulationRef.current?.nodes().find(n => n.id === focusNodeId);
+      if (!node || node.x === undefined || node.y === undefined) return;
+
+      const svg = d3.select(svgRef.current!);
+      const scale = 1.5; // Zoom level
+      const transform = d3.zoomIdentity
+        .translate(width / 2, height / 2)
+        .scale(scale)
+        .translate(-node.x, -node.y);
+
+      svg.transition()
+        .duration(750)
+        .call(zoomRef.current!.transform as any, transform);
+    }, 500);
+
+    return () => clearTimeout(timer);
+  }, [focusNodeId, data.nodes, width, height]);
 
   return (
     <div className="relative w-full h-full flex items-center justify-center bg-[#001f3f]">
