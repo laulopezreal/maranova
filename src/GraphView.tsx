@@ -260,7 +260,7 @@ const GraphView = ({ data, width = 800, height = 600, focusNodeId, onNodeClick }
       const zoomTransform = zoomRef.current?.transform;
       if (!zoomTransform) return;
 
-      svg.transition<SVGSVGElement, unknown>()
+      svg.transition()
         .duration(750)
         .call(zoomTransform, transform);
     }, 500);
