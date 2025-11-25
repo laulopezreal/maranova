@@ -1,8 +1,9 @@
-import { type MouseEvent, useEffect, useState } from 'react'
+import { type MouseEvent, useEffect, useMemo, useState } from 'react'
 import { AnimatePresence, motion, useMotionValue, useTransform, animate } from 'framer-motion'
 import GraphView from './GraphView'
 import './App.css'
 import { mockBookmarkTree, type BookmarkNode } from './mockData'
+import { bookmarksToGraphData } from './utils/bookmarkToGraph'
 import { BookmarkCard } from './BookmarkCard'
 import { BookmarkListItem } from './BookmarkListItem'
 import { GlassNavbar } from './GlassNavbar'
@@ -97,6 +98,9 @@ function App() {
     pointerX.set(0)
     pointerY.set(0)
   }
+
+  // Convert bookmarks to graph data
+  const graphData = useMemo(() => bookmarksToGraphData(mockBookmarkTree), [])
 
   return (
     <motion.div
@@ -234,7 +238,7 @@ function App() {
 
                     {viewMode === 'graph' ? (
                       <div className="h-[600px] rounded-xl overflow-hidden border border-white/5">
-                        <GraphView width={1000} height={600} />
+                        <GraphView data={graphData} width={1000} height={600} />
                       </div>
                     ) : (
                     <section className={viewMode === 'grid' ? 'grid gap-4 sm:grid-cols-2 lg:grid-cols-3' : 'flex flex-col gap-3'}>
