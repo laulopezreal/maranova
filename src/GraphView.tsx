@@ -57,7 +57,7 @@ const GraphView = ({ data, width = 800, height = 600, focusNodeId, onNodeClick }
         .distance(100))
       .force("charge", d3.forceManyBody().strength(-300))
       .force("center", d3.forceCenter(width / 2, height / 2))
-      .force("collision", d3.forceCollide().radius(d => (d as Node).size + 10));
+      .force("collision", d3.forceCollide().radius(d => d.size + 10));
 
     simulationRef.current = simulation;
 
