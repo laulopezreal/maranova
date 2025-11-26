@@ -80,13 +80,13 @@ export const StarrySky: React.FC<StarrySkyProps> = ({ theme = 'galaxy' }) => {
             })(),
         }));
 
-        const newBubbles = Array.from({ length: 110 }, (_, index) => ({
+        const newBubbles = Array.from({ length: 160 }, (_, index) => ({
             left: Math.random() * vw,
-            size: 4 + Math.random() * 6.5,
-            delay: Math.random() * 10 + index * 0.055,
-            duration: 11 + Math.random() * 14,
-            drift: (Math.random() - 0.5) * 48,
-            blur: Math.random() * 2.4,
+            size: 6 + Math.random() * 9,
+            delay: Math.random() * 9 + index * 0.045,
+            duration: 13 + Math.random() * 14,
+            drift: (Math.random() - 0.5) * 52,
+            blur: Math.random() * 1.6,
         }));
 
         setStars(newStars);
