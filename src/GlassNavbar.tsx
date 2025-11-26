@@ -2,22 +2,16 @@ import { motion } from 'framer-motion'
 import { useState } from 'react'
 import { useAuth } from './auth/AuthContext'
 
-type NavPage = 'home' | 'about' | 'docs' | 'terms'
-
 type GlassNavbarProps = {
   theme: 'galaxy' | 'ocean'
-  currentPage: NavPage
   onToggleTheme: () => void
-  onNavigate: (page: NavPage) => void
   searchQuery: string
   onSearchChange: (query: string) => void
 }
 
 export function GlassNavbar({
   theme,
-  currentPage,
   onToggleTheme,
-  onNavigate,
   searchQuery,
   onSearchChange,
 }: GlassNavbarProps) {
@@ -37,7 +31,6 @@ export function GlassNavbar({
   const dividerColor = isOcean ? 'bg-sky-900/10' : 'bg-white/10'
   const iconColor = isOcean ? 'text-[#0b2348]' : 'text-white'
   const chipBase = isOcean ? 'text-[#0b2348]' : 'text-white'
-  const linkHover = isOcean ? 'hover:bg-sky-100/60 hover:text-sky-900' : 'hover:bg-white/5 hover:text-white/90'
 
   const providers = [
     { id: 'google', label: 'Google', accent: 'hover:bg-amber-400/20 hover:text-amber-200' },
@@ -70,35 +63,6 @@ export function GlassNavbar({
             <img src="/olas-del-mar.png" alt="Maranova logo" className="h-6 w-6 object-contain" />
           </span>
           <span className={`${navAccent} font-medium tracking-tight`}>Maranova</span>
-        </div>
-
-        <div className="hidden items-center gap-1 sm:flex ml-4">
-          {[
-            { label: 'Home', page: 'home' },
-            { label: 'About', page: 'about' },
-            { label: 'Docs', page: 'docs' },
-            { label: 'Terms', page: 'terms' },
-          ].map((item) => {
-            const active = currentPage === item.page
-            return (
-              <a
-                key={item.page}
-                href={item.page === 'home' ? '#/' : `#/${item.page}`}
-                onClick={(event) => {
-                  event.preventDefault()
-                  onNavigate(item.page as NavPage)
-                }}
-                className={`rounded-full px-4 py-1.5 text-[13px] font-medium transition-all duration-300 ${active
-                  ? isOcean
-                    ? 'bg-sky-100/80 text-sky-900 shadow-sm'
-                    : 'bg-white/10 text-white shadow-sm'
-                  : `${mutedText} ${linkHover}`
-                  }`}
-              >
-                {item.label}
-              </a>
-            )
-          })}
         </div>
 
         <div className="flex min-w-0 flex-1 flex-wrap items-center justify-end gap-3">
