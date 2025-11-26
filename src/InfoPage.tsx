@@ -23,20 +23,21 @@ export function InfoPage({
     const cardSurface = isOcean
         ? 'border-sky-900/15 bg-white/75 shadow-[0_18px_50px_rgba(12,74,110,0.14)]'
         : 'border-white/10 bg-white/5 shadow-[0_15px_45px_rgba(0,0,0,0.25)]'
+    const cardOutline = isOcean ? 'outline outline-1 outline-sky-900/10' : 'outline outline-1 outline-indigo-100/10'
     const textColor = isOcean ? 'text-[#0b2348]' : 'text-white'
     const subText = isOcean ? 'text-slate-600' : 'text-white/80'
 
     return (
-        <section className="text-left">
+        <section className="mx-auto max-w-5xl text-center">
             <p className={`text-xs uppercase tracking-[0.45em] ${subText}`}>{page}</p>
             <h1 className={`mt-2 text-4xl font-semibold leading-tight md:text-5xl ${textColor}`}>{content.heading}</h1>
-            <p className={`mt-4 max-w-3xl text-base md:text-lg ${subText}`}>{content.subheading}</p>
+            <p className={`mt-4 mx-auto max-w-3xl text-base md:text-lg ${subText}`}>{content.subheading}</p>
 
-            <div className="mt-8 grid gap-4 md:grid-cols-3">
+            <div className="mt-10 grid gap-5 md:grid-cols-3 justify-items-center">
                 {content.blocks.map((block) => (
                     <motion.article
                         key={block.title}
-                        className={`relative overflow-hidden rounded-2xl border p-5 backdrop-blur-md ${cardSurface}`}
+                        className={`relative w-full max-w-sm overflow-hidden rounded-2xl border p-5 text-left backdrop-blur-md ${cardSurface} ${cardOutline}`}
                         style={{ backgroundImage: bloom }}
                         initial={{ opacity: 0, y: 12 }}
                         animate={{ opacity: 1, y: 0 }}
