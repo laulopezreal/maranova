@@ -8,6 +8,7 @@ import { BookmarkCard } from './BookmarkCard'
 import { BookmarkListItem } from './BookmarkListItem'
 import { GlassNavbar } from './GlassNavbar'
 import { StarrySky } from './StarrySky'
+import { WaveBackdrop } from './WaveBackdrop'
 import { InfoPage } from './InfoPage'
 import { Sidebar } from './Sidebar'
 import { Breadcrumbs } from './Breadcrumbs'
@@ -134,6 +135,7 @@ function App() {
       onMouseLeave={resetPointer}
     >
       <StarrySky theme={theme} />
+      <WaveBackdrop theme={theme} />
 
       <div className="relative z-10 flex min-h-screen flex-col">
         <GlassNavbar
