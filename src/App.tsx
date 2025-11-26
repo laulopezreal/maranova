@@ -129,7 +129,7 @@ function App() {
       animate={{
         background: backgroundGradient
       }}
-      transition={{ duration: 0.9, ease: 'easeInOut' }}
+      transition={{ duration: 1.2, ease: [0.25, 0.8, 0.4, 1] }}
       onMouseMove={handlePointerMove}
       onMouseLeave={resetPointer}
     >
@@ -141,14 +141,14 @@ function App() {
             initial={{ opacity: 0 }}
             animate={{ opacity: 1 }}
             exit={{ opacity: 0 }}
-            transition={{ duration: 0.4, ease: 'easeOut' }}
+            transition={{ duration: 0.7, ease: [0.36, 1, 0.32, 1] }}
           >
             <motion.div
               className="absolute inset-0"
               initial={{ opacity: 0 }}
-              animate={{ opacity: 0.4 }}
+              animate={{ opacity: 0.55 }}
               exit={{ opacity: 0 }}
-              transition={{ duration: 0.5, ease: 'easeOut' }}
+              transition={{ duration: 1.05, ease: [0.33, 1, 0.68, 1] }}
               style={{
                 background: isOcean
                   ? 'radial-gradient(circle at 50% 40%, rgba(56, 189, 248, 0.25), rgba(14, 165, 233, 0.1), transparent 60%)'
@@ -156,24 +156,32 @@ function App() {
               }}
             />
             <motion.div
+              className="absolute inset-0 bg-gradient-to-b from-white/10 via-transparent to-transparent"
+              initial={{ opacity: 0, scaleY: 0.9 }}
+              animate={{ opacity: 0.35, scaleY: 1 }}
+              exit={{ opacity: 0, scaleY: 0.9 }}
+              transition={{ duration: 1.1, ease: [0.36, 1, 0.32, 1] }}
+              style={{ mixBlendMode: 'screen' }}
+            />
+            <motion.div
               className="absolute left-1/2 top-1/2 aspect-square w-[28rem] -translate-x-1/2 -translate-y-1/2 rounded-full blur-3xl"
               style={{
                 background: transitionWash,
                 mixBlendMode: 'screen'
               }}
-              initial={{ scale: 0.5, opacity: 0.7, rotate: transitionTheme === 'ocean' ? -24 : 16 }}
-              animate={{ scale: 6.2, opacity: 0, rotate: transitionTheme === 'ocean' ? -6 : 26 }}
+              initial={{ scale: 0.45, opacity: 0.8, rotate: transitionTheme === 'ocean' ? -24 : 16 }}
+              animate={{ scale: 7.8, opacity: 0, rotate: transitionTheme === 'ocean' ? -6 : 28 }}
               exit={{ opacity: 0 }}
-              transition={{ duration: 1.05, ease: [0.16, 1, 0.3, 1] }}
+              transition={{ duration: 1.45, ease: [0.16, 1, 0.3, 1] }}
             />
             <motion.div
               className={`absolute left-1/2 top-1/2 h-80 w-80 -translate-x-1/2 -translate-y-1/2 rounded-full border-2 ${
                 isOcean ? 'border-white/70' : 'border-white/20'
               }`}
               initial={{ scale: 0.6, opacity: 0 }}
-              animate={{ scale: 2.4, opacity: 0.4 }}
+              animate={{ scale: 2.6, opacity: 0.5 }}
               exit={{ opacity: 0 }}
-              transition={{ duration: 0.9, ease: [0.33, 1, 0.68, 1] }}
+              transition={{ duration: 1.25, ease: [0.33, 1, 0.68, 1] }}
               style={{ boxShadow: isOcean ? '0 0 80px rgba(125,211,252,0.3)' : '0 0 80px rgba(129,140,248,0.28)' }}
             />
           </motion.div>
