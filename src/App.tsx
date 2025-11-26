@@ -54,6 +54,8 @@ function App() {
   const [currentFolderId, setCurrentFolderId] = useState<string>('root-1')
   const [viewMode, setViewMode] = useState<ViewMode>('grid')
   const [showHero, setShowHero] = useState(true)
+  const [transitionTheme, setTransitionTheme] = useState<Theme>('galaxy')
+  const [transitionId, setTransitionId] = useState(0)
   const progress = useMotionValue(0)
   const progressText = useTransform(progress, (v) => `${Math.round(v)}%`)
   const pointerX = useMotionValue(0)
@@ -69,6 +71,9 @@ function App() {
     : 'border-white/5 bg-white/[0.02] backdrop-blur-xl'
   const panelHover = isOcean ? 'hover:border-sky-900/25 hover:bg-white/85' : 'hover:border-white/10 hover:bg-white/[0.05]'
   const mutedText = isOcean ? 'text-slate-600' : 'text-slate-500'
+  const transitionWash = transitionTheme === 'ocean'
+    ? 'radial-gradient(circle at 30% 35%, rgba(125, 211, 252, 0.9), rgba(14, 165, 233, 0.55), rgba(14, 116, 144, 0.32))'
+    : 'radial-gradient(circle at 68% 35%, rgba(129, 140, 248, 0.95), rgba(99, 102, 241, 0.62), rgba(59, 130, 246, 0.32))'
 
   useEffect(() => {
     animate(progress, 100, { duration: 7, ease: 'linear' })
@@ -86,6 +91,8 @@ function App() {
   }, [])
 
   const toggleTheme = () => {
+    setTransitionTheme(theme === 'galaxy' ? 'ocean' : 'galaxy')
+    setTransitionId((id) => id + 1)
     setTheme((current) => (current === 'galaxy' ? 'ocean' : 'galaxy'))
   }
 
@@ -126,6 +133,53 @@ function App() {
       onMouseMove={handlePointerMove}
       onMouseLeave={resetPointer}
     >
+      <AnimatePresence>
+        {transitionId > 0 && (
+          <motion.div
+            key={transitionId}
+            className="pointer-events-none fixed inset-0 z-30 overflow-hidden"
+            initial={{ opacity: 0 }}
+            animate={{ opacity: 1 }}
+            exit={{ opacity: 0 }}
+            transition={{ duration: 0.4, ease: 'easeOut' }}
+          >
+            <motion.div
+              className="absolute inset-0"
+              initial={{ opacity: 0 }}
+              animate={{ opacity: 0.4 }}
+              exit={{ opacity: 0 }}
+              transition={{ duration: 0.5, ease: 'easeOut' }}
+              style={{
+                background: isOcean
+                  ? 'radial-gradient(circle at 50% 40%, rgba(56, 189, 248, 0.25), rgba(14, 165, 233, 0.1), transparent 60%)'
+                  : 'radial-gradient(circle at 50% 40%, rgba(99, 102, 241, 0.18), rgba(14, 116, 144, 0.08), transparent 62%)'
+              }}
+            />
+            <motion.div
+              className="absolute left-1/2 top-1/2 aspect-square w-[28rem] -translate-x-1/2 -translate-y-1/2 rounded-full blur-3xl"
+              style={{
+                background: transitionWash,
+                mixBlendMode: 'screen'
+              }}
+              initial={{ scale: 0.5, opacity: 0.7, rotate: transitionTheme === 'ocean' ? -24 : 16 }}
+              animate={{ scale: 6.2, opacity: 0, rotate: transitionTheme === 'ocean' ? -6 : 26 }}
+              exit={{ opacity: 0 }}
+              transition={{ duration: 1.05, ease: [0.16, 1, 0.3, 1] }}
+            />
+            <motion.div
+              className={`absolute left-1/2 top-1/2 h-80 w-80 -translate-x-1/2 -translate-y-1/2 rounded-full border-2 ${
+                isOcean ? 'border-white/70' : 'border-white/20'
+              }`}
+              initial={{ scale: 0.6, opacity: 0 }}
+              animate={{ scale: 2.4, opacity: 0.4 }}
+              exit={{ opacity: 0 }}
+              transition={{ duration: 0.9, ease: [0.33, 1, 0.68, 1] }}
+              style={{ boxShadow: isOcean ? '0 0 80px rgba(125,211,252,0.3)' : '0 0 80px rgba(129,140,248,0.28)' }}
+            />
+          </motion.div>
+        )}
+      </AnimatePresence>
+
       <StarrySky theme={theme} />
 
       <div className="relative z-10 flex min-h-screen flex-col">
