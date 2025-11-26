@@ -67,9 +67,7 @@ export function GlassNavbar({
               isOcean ? 'bg-sky-900/10 text-sky-800' : 'bg-indigo-500/10 text-indigo-300'
             }`}
           >
-            <svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2.5" strokeLinecap="round" strokeLinejoin="round">
-              <path d="M12 2L2 7l10 5 10-5-10-5zM2 17l10 5 10-5M2 12l10 5 10-5" />
-            </svg>
+            <img src="/olas-del-mar.png" alt="Maranova logo" className="h-6 w-6 object-contain" />
           </span>
           <span className={`${navAccent} font-medium tracking-tight`}>Maranova</span>
         </div>
