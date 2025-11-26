@@ -11,6 +11,7 @@ import { StarrySky } from './StarrySky'
 import { InfoPage } from './InfoPage'
 import { Sidebar } from './Sidebar'
 import { Breadcrumbs } from './Breadcrumbs'
+import { Typewriter } from './Typewriter'
 import { ViewSwitcher, type ViewMode } from './ViewSwitcher'
 import { infoSections } from './content'
 
@@ -143,8 +144,8 @@ function App() {
               <>
                 <motion.div
                   className="relative overflow-hidden"
-                  initial={{ height: '420px' }}
-                  animate={{ height: showHero ? '420px' : '0px' }}
+                  initial={{ height: '500px' }}
+                  animate={{ height: showHero ? '500px' : '0px' }}
                   transition={{ duration: 1.2, ease: 'easeInOut' }}
                 >
                   <AnimatePresence>
@@ -156,44 +157,81 @@ function App() {
                         exit={{ opacity: 0, y: -30 }}
                         transition={{ duration: 1.2, ease: 'easeInOut' }}
                       >
-                        <div className={`rounded-3xl p-12 shadow-[0_25px_60px_rgba(0,0,0,0.12)] backdrop-blur-xl ${panelSurface}`}>
-                          <div className="mx-auto h-16 w-16 relative">
-                            <svg className="h-16 w-16 -rotate-90" viewBox="0 0 36 36">
-                              <circle
-                                cx="18"
-                                cy="18"
-                                r="16"
-                                fill="none"
-                                stroke="currentColor"
-                                strokeWidth="2"
-                                className={ringColor}
-                              />
-                              <motion.circle
-                                cx="18"
-                                cy="18"
-                                r="16"
-                                fill="none"
-                                stroke="url(#gradient)"
-                                strokeWidth="2"
-                                strokeLinecap="round"
-                                initial={{ pathLength: 0 }}
-                                animate={{ pathLength: 1 }}
-                                transition={{ duration: 7, ease: 'linear' }}
-                                strokeDasharray="100.53"
-                                strokeDashoffset="0"
-                              />
-                              <defs>
-                                <linearGradient id="gradient" x1="0%" y1="0%" x2="100%" y2="0%">
-                                  <stop offset="0%" stopColor="#6366f1" />
-                                  <stop offset="100%" stopColor="#60a5fa" />
-                                </linearGradient>
-                              </defs>
-                            </svg>
-                            <motion.div
-                              className={`absolute inset-0 flex items-center justify-center text-sm font-normal ${isOcean ? 'text-[#0b2348]' : 'text-white'}`}
-                            >
-                              {progressText}
-                            </motion.div>
+                        <div className="space-y-8 text-center">
+                          <motion.p
+                            initial={{ opacity: 0, y: 10 }}
+                            animate={{ opacity: 1, y: 0 }}
+                            transition={{ duration: 0.6, delay: 0.2 }}
+                            className={`text-xs font-medium uppercase tracking-[0.4em] ${
+                              isOcean ? 'text-sky-800/70' : 'text-indigo-300/80'
+                            }`}
+                          >
+                            Curate. Collect. Connect.
+                          </motion.p>
+                          <motion.h1
+                            initial={{ opacity: 0, y: 10 }}
+                            animate={{ opacity: 1, y: 0 }}
+                            transition={{ duration: 0.6, delay: 0.3 }}
+                            className={`text-5xl font-semibold leading-tight tracking-tight md:text-7xl bg-clip-text text-transparent ${
+                              isOcean
+                                ? 'bg-gradient-to-b from-[#0b2348] to-[#1e4a73]/80'
+                                : 'bg-gradient-to-b from-white to-white/60'
+                            }`}
+                          >
+                            <Typewriter text="Bookmarks, reimagined." delay={800} speed={150} />
+                          </motion.h1>
+                          <motion.p
+                            initial={{ opacity: 0, y: 10 }}
+                            animate={{ opacity: 1, y: 0 }}
+                            transition={{ duration: 0.6, delay: 0.4 }}
+                            className={`mx-auto max-w-2xl text-lg font-light leading-relaxed ${
+                              isOcean ? 'text-slate-600 md:text-xl' : 'text-slate-400 md:text-xl'
+                            }`}
+                          >
+                            A calmer command center for every link that matters. Organize, tag, and rediscover your web with ease.
+                          </motion.p>
+
+                          <div className={`mx-auto mt-8 h-16 w-16 rounded-full p-2 shadow-[0_25px_60px_rgba(0,0,0,0.08)] backdrop-blur-xl ${panelSurface}`}>
+                            <div className="relative h-full w-full">
+                              <svg className="h-full w-full -rotate-90" viewBox="0 0 36 36">
+                                <circle
+                                  cx="18"
+                                  cy="18"
+                                  r="16"
+                                  fill="none"
+                                  stroke="currentColor"
+                                  strokeWidth="2"
+                                  className={ringColor}
+                                />
+                                <motion.circle
+                                  cx="18"
+                                  cy="18"
+                                  r="16"
+                                  fill="none"
+                                  stroke="url(#gradient)"
+                                  strokeWidth="2"
+                                  strokeLinecap="round"
+                                  initial={{ pathLength: 0 }}
+                                  animate={{ pathLength: 1 }}
+                                  transition={{ duration: 7, ease: 'linear' }}
+                                  strokeDasharray="100.53"
+                                  strokeDashoffset="0"
+                                />
+                                <defs>
+                                  <linearGradient id="gradient" x1="0%" y1="0%" x2="100%" y2="0%">
+                                    <stop offset="0%" stopColor={isOcean ? '#0ea5e9' : '#6366f1'} />
+                                    <stop offset="100%" stopColor={isOcean ? '#1d4ed8' : '#60a5fa'} />
+                                  </linearGradient>
+                                </defs>
+                              </svg>
+                              <motion.div
+                                className={`absolute inset-0 flex items-center justify-center text-sm font-normal ${
+                                  isOcean ? 'text-[#0b2348]' : 'text-white'
+                                }`}
+                              >
+                                {progressText}
+                              </motion.div>
+                            </div>
                           </div>
                         </div>
                       </motion.div>
@@ -324,9 +362,6 @@ function App() {
                       <p className={`text-xs font-medium uppercase tracking-[0.3em] ${heroAccent}`}>
                         Orbit notes
                       </p>
-                      <h2 className={`mt-2 text-3xl font-bold tracking-tight ${isOcean ? 'text-[#0b2348]' : 'text-white/90'}`}>
-                        About, Docs, Terms
-                      </h2>
                     </div>
                     <span className={`text-xs max-w-xs text-right hidden md:block ${mutedText}`}>
                       Maranova = mare (sea) + nova (new star).<br />Two moods, one calm surface.
