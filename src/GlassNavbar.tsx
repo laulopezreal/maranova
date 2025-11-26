@@ -2,16 +2,22 @@ import { motion } from 'framer-motion'
 import { useState } from 'react'
 import { useAuth } from './auth/AuthContext'
 
+type NavPage = 'home' | 'about' | 'docs' | 'terms'
+
 type GlassNavbarProps = {
   theme: 'galaxy' | 'ocean'
+  currentPage: NavPage
   onToggleTheme: () => void
+  onNavigate: (page: NavPage) => void
   searchQuery: string
   onSearchChange: (query: string) => void
 }
 
 export function GlassNavbar({
   theme,
+  currentPage,
   onToggleTheme,
+  onNavigate,
   searchQuery,
   onSearchChange,
 }: GlassNavbarProps) {
@@ -63,6 +69,35 @@ export function GlassNavbar({
             <img src="/olas-del-mar.png" alt="Maranova logo" className="h-6 w-6 object-contain" />
           </span>
           <span className={`${navAccent} font-medium tracking-tight`}>Maranova</span>
+        </div>
+
+        <div className="hidden items-center gap-1 sm:flex ml-4">
+          {[
+            { label: 'Home', page: 'home' },
+            { label: 'About', page: 'about' },
+            { label: 'Docs', page: 'docs' },
+            { label: 'Terms', page: 'terms' },
+          ].map((item) => {
+            const active = currentPage === item.page
+            return (
+              <a
+                key={item.page}
+                href={item.page === 'home' ? '#/' : `#/${item.page}`}
+                onClick={(event) => {
+                  event.preventDefault()
+                  onNavigate(item.page as NavPage)
+                }}
+                className={`rounded-full px-4 py-1.5 text-[13px] font-medium transition-all duration-300 ${active
+                  ? isOcean
+                    ? 'bg-white text-[#0b2348] shadow-sm'
+                    : 'bg-white/10 text-white shadow-sm'
+                  : `${isOcean ? 'text-slate-600 hover:bg-white/80 hover:text-[#0b2348]' : 'text-slate-400 hover:bg-white/5 hover:text-white/90'}`
+                  }`}
+              >
+                {item.label}
+              </a>
+            )
+          })}
         </div>
 
         <div className="flex min-w-0 flex-1 flex-wrap items-center justify-end gap-3">
