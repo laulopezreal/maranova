@@ -14,6 +14,7 @@ import { Breadcrumbs } from './Breadcrumbs'
 import { Typewriter } from './Typewriter'
 import { ViewSwitcher, type ViewMode } from './ViewSwitcher'
 import { infoSections } from './content'
+import { ThemeTransition } from './ThemeTransition'
 
 export type Theme = 'galaxy' | 'ocean'
 export type Page = 'home' | 'about' | 'docs' | 'terms'
@@ -54,6 +55,7 @@ function App() {
   const [currentFolderId, setCurrentFolderId] = useState<string>('root-1')
   const [viewMode, setViewMode] = useState<ViewMode>('grid')
   const [showHero, setShowHero] = useState(true)
+  const [transitionTrigger, setTransitionTrigger] = useState(0)
   const progress = useMotionValue(0)
   const progressText = useTransform(progress, (v) => `${Math.round(v)}%`)
   const pointerX = useMotionValue(0)
@@ -86,7 +88,11 @@ function App() {
   }, [])
 
   const toggleTheme = () => {
-    setTheme((current) => (current === 'galaxy' ? 'ocean' : 'galaxy'))
+    setTheme((current) => {
+      const next = current === 'galaxy' ? 'ocean' : 'galaxy'
+      setTransitionTrigger((value) => value + 1)
+      return next
+    })
   }
 
   const navigate = (next: Page) => {
@@ -127,6 +133,7 @@ function App() {
       onMouseLeave={resetPointer}
     >
       <StarrySky theme={theme} />
+      <ThemeTransition theme={theme} trigger={transitionTrigger} />
 
       <div className="relative z-10 flex min-h-screen flex-col">
         <GlassNavbar
