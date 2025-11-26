@@ -56,6 +56,7 @@ function App() {
   const [showHero, setShowHero] = useState(true)
   const [transitionTheme, setTransitionTheme] = useState<Theme>('galaxy')
   const [transitionId, setTransitionId] = useState(0)
+  const [isTransitioning, setIsTransitioning] = useState(false)
   const progress = useMotionValue(0)
   const progressText = useTransform(progress, (v) => `${Math.round(v)}%`)
   const pointerX = useMotionValue(0)
@@ -93,8 +94,16 @@ function App() {
   const toggleTheme = () => {
     setTransitionTheme(theme === 'galaxy' ? 'ocean' : 'galaxy')
     setTransitionId((id) => id + 1)
+    setIsTransitioning(true)
     setTheme((current) => (current === 'galaxy' ? 'ocean' : 'galaxy'))
   }
+
+  useEffect(() => {
+    if (transitionId === 0) return
+
+    const timeout = setTimeout(() => setIsTransitioning(false), 1700)
+    return () => clearTimeout(timeout)
+  }, [transitionId])
 
   const navigate = (next: Page) => {
     const hash = next === 'home' ? '' : `/${next}`
@@ -134,7 +143,7 @@ function App() {
       onMouseLeave={resetPointer}
     >
       <AnimatePresence>
-        {transitionId > 0 && (
+        {isTransitioning && (
           <motion.div
             key={transitionId}
             className="pointer-events-none fixed inset-0 z-30 overflow-hidden"
