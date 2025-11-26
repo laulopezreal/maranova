@@ -28,16 +28,16 @@ export function InfoPage({
     const subText = isOcean ? 'text-slate-600' : 'text-white/80'
 
     return (
-        <section className="mx-auto max-w-5xl text-center">
+        <section className="mx-auto flex w-full max-w-6xl flex-col items-center px-6 pb-16 text-center md:px-10">
             <p className={`text-xs uppercase tracking-[0.45em] ${subText}`}>{page}</p>
-            <h1 className={`mt-2 text-4xl font-semibold leading-tight md:text-5xl ${textColor}`}>{content.heading}</h1>
-            <p className={`mt-4 mx-auto max-w-3xl text-base md:text-lg ${subText}`}>{content.subheading}</p>
+            <h1 className={`mt-3 text-4xl font-semibold leading-tight md:text-5xl ${textColor}`}>{content.heading}</h1>
+            <p className={`mt-5 max-w-3xl text-base md:text-lg ${subText}`}>{content.subheading}</p>
 
-            <div className="mt-10 grid gap-5 md:grid-cols-3 justify-items-center">
+            <div className="mt-12 grid w-full gap-6 sm:grid-cols-2 lg:grid-cols-3">
                 {content.blocks.map((block) => (
                     <motion.article
                         key={block.title}
-                        className={`relative w-full max-w-sm overflow-hidden rounded-2xl border p-5 text-left backdrop-blur-md ${cardSurface} ${cardOutline}`}
+                        className={`relative h-full w-full overflow-hidden rounded-2xl border p-5 text-left backdrop-blur-md ${cardSurface} ${cardOutline}`}
                         style={{ backgroundImage: bloom }}
                         initial={{ opacity: 0, y: 12 }}
                         animate={{ opacity: 1, y: 0 }}
