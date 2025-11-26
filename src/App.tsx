@@ -356,19 +356,19 @@ function App() {
                   </div>
                 </div>
 
-                <section className={`rounded-3xl px-8 py-12 text-left shadow-2xl backdrop-blur-xl ${panelSurface}`}>
-                  <div className="flex flex-col gap-4 md:flex-row md:items-end md:justify-between">
-                    <div>
-                      <p className={`text-xs font-medium uppercase tracking-[0.3em] ${heroAccent}`}>
-                        Orbit notes
-                      </p>
-                    </div>
-                    <span className={`text-xs max-w-xs text-right hidden md:block ${mutedText}`}>
-                      Maranova = mare (sea) + nova (new star).<br />Two moods, one calm surface.
+                <section
+                  className={`mx-auto max-w-6xl rounded-3xl px-8 py-12 text-center shadow-2xl backdrop-blur-xl ${panelSurface}`}
+                >
+                  <div className="flex flex-col items-center gap-4 text-center">
+                    <p className={`text-xs font-medium uppercase tracking-[0.3em] ${heroAccent}`}>
+                      Orbit notes
+                    </p>
+                    <span className={`text-xs max-w-2xl ${mutedText}`}>
+                      Maranova = mare (sea) + nova (new star). Two moods, one calm surface.
                     </span>
                   </div>
 
-                  <div className="mt-10 grid gap-6 md:grid-cols-3">
+                  <div className="mt-10 grid w-full justify-items-center gap-6 md:grid-cols-3">
                     {infoSections.map((section, index) => {
                       const bloom =
                         theme === 'galaxy'
@@ -379,7 +379,9 @@ function App() {
                         <motion.article
                           id={section.id}
                           key={section.id}
-                          className={`group relative overflow-hidden rounded-2xl transition-all duration-300 ${panelSurface} ${panelHover}`}
+                          className={`group relative w-full max-w-[360px] overflow-hidden rounded-2xl border transition-all duration-300 ${panelSurface} ${panelHover} ${
+                            isOcean ? 'outline outline-1 outline-sky-900/15' : 'outline outline-1 outline-indigo-100/15'
+                          }`}
                           style={{ backgroundImage: bloom }}
                           initial={{ opacity: 0, y: 12 }}
                           animate={{ opacity: 1, y: 0 }}
