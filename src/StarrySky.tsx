@@ -80,13 +80,13 @@ export const StarrySky: React.FC<StarrySkyProps> = ({ theme = 'galaxy' }) => {
             })(),
         }));
 
-        const newBubbles = Array.from({ length: 160 }, (_, index) => ({
+        const newBubbles = Array.from({ length: 90 }, () => ({
             left: Math.random() * vw,
-            size: 6 + Math.random() * 9,
-            delay: Math.random() * 9 + index * 0.045,
-            duration: 13 + Math.random() * 14,
-            drift: (Math.random() - 0.5) * 52,
-            blur: Math.random() * 1.6,
+            size: 5 + Math.random() * 7,
+            delay: Math.random() * 1.5,
+            duration: 12 + Math.random() * 10,
+            drift: (Math.random() - 0.5) * 28,
+            blur: Math.random() * 1.2,
         }));
 
         setStars(newStars);
@@ -99,6 +99,12 @@ export const StarrySky: React.FC<StarrySkyProps> = ({ theme = 'galaxy' }) => {
         window.addEventListener('resize', generateSky);
         return () => window.removeEventListener('resize', generateSky);
     }, [generateSky]);
+
+    useEffect(() => {
+        if (theme === 'ocean') {
+            generateSky();
+        }
+    }, [generateSky, theme]);
 
     // Theme-specific colors
     const starColor = theme === 'ocean' ? '#87CEEB' : 'white'; // Sky blue for ocean, white for galaxy
@@ -161,7 +167,7 @@ export const StarrySky: React.FC<StarrySkyProps> = ({ theme = 'galaxy' }) => {
                     </div>
                 </>
             ) : (
-                <div className="ocean-bubbles">
+                <div className="ocean-bubbles" key={`bubbles-${theme}`}>
                     {bubbles.map((bubble, index) => (
                         <span
                             key={`bubble-${index}`}
