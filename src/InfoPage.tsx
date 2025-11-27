@@ -23,7 +23,7 @@ export function InfoPage({
     const cardSurface = isOcean
         ? 'border-sky-900/15 bg-white/75 shadow-[0_18px_50px_rgba(12,74,110,0.14)]'
         : 'border-white/10 bg-white/5 shadow-[0_15px_45px_rgba(0,0,0,0.25)]'
-    const cardOutline = isOcean ? 'outline outline-1 outline-sky-900/10' : 'outline outline-1 outline-indigo-100/10'
+    const cardOutline = `outline outline-1 ${isOcean ? 'outline-sky-900/10' : 'outline-indigo-100/10'}`
     const textColor = isOcean ? 'text-[#0b2348]' : 'text-white'
     const subText = isOcean ? 'text-slate-600' : 'text-white/80'
 
