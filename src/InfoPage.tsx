@@ -23,20 +23,21 @@ export function InfoPage({
     const cardSurface = isOcean
         ? 'border-sky-900/15 bg-white/75 shadow-[0_18px_50px_rgba(12,74,110,0.14)]'
         : 'border-white/10 bg-white/5 shadow-[0_15px_45px_rgba(0,0,0,0.25)]'
+    const cardOutline = `outline outline-1 ${isOcean ? 'outline-sky-900/10' : 'outline-indigo-100/10'}`
     const textColor = isOcean ? 'text-[#0b2348]' : 'text-white'
     const subText = isOcean ? 'text-slate-600' : 'text-white/80'
 
     return (
-        <section className="text-left">
+        <section className="mx-auto flex w-full max-w-6xl flex-col items-center px-6 pb-16 text-center md:px-10">
             <p className={`text-xs uppercase tracking-[0.45em] ${subText}`}>{page}</p>
-            <h1 className={`mt-2 text-4xl font-semibold leading-tight md:text-5xl ${textColor}`}>{content.heading}</h1>
-            <p className={`mt-4 max-w-3xl text-base md:text-lg ${subText}`}>{content.subheading}</p>
+            <h1 className={`mt-3 text-4xl font-semibold leading-tight md:text-5xl ${textColor}`}>{content.heading}</h1>
+            <p className={`mt-5 max-w-3xl text-base md:text-lg ${subText}`}>{content.subheading}</p>
 
-            <div className="mt-8 grid gap-4 md:grid-cols-3">
+            <div className="mt-12 grid w-full justify-items-center gap-6 sm:grid-cols-2 lg:grid-cols-3">
                 {content.blocks.map((block) => (
                     <motion.article
                         key={block.title}
-                        className={`relative overflow-hidden rounded-2xl border p-5 backdrop-blur-md ${cardSurface}`}
+                        className={`relative flex h-full w-full max-w-[20rem] flex-col items-center overflow-hidden rounded-2xl border p-6 text-center backdrop-blur-md ${cardSurface} ${cardOutline}`}
                         style={{ backgroundImage: bloom }}
                         initial={{ opacity: 0, y: 12 }}
                         animate={{ opacity: 1, y: 0 }}
@@ -44,7 +45,7 @@ export function InfoPage({
                     >
                         <div className="pointer-events-none absolute -right-10 top-0 h-24 w-24 rounded-full bg-white/10 blur-3xl" />
                         <h3 className={`text-xl font-semibold ${textColor}`}>{block.title}</h3>
-                        <p className={`mt-2 text-sm ${subText}`}>{block.body}</p>
+                        <p className={`mt-3 text-sm leading-relaxed ${subText}`}>{block.body}</p>
                     </motion.article>
                 ))}
             </div>
