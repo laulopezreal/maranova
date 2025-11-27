@@ -33,11 +33,11 @@ export function InfoPage({
             <h1 className={`mt-3 text-4xl font-semibold leading-tight md:text-5xl ${textColor}`}>{content.heading}</h1>
             <p className={`mt-5 max-w-3xl text-base md:text-lg ${subText}`}>{content.subheading}</p>
 
-            <div className="mt-12 grid w-full gap-6 sm:grid-cols-2 lg:grid-cols-3">
+            <div className="mt-12 grid w-full justify-items-center gap-6 sm:grid-cols-2 lg:grid-cols-3">
                 {content.blocks.map((block) => (
                     <motion.article
                         key={block.title}
-                        className={`relative h-full w-full overflow-hidden rounded-2xl border p-5 text-left backdrop-blur-md ${cardSurface} ${cardOutline}`}
+                        className={`relative flex h-full w-full max-w-[20rem] flex-col items-center overflow-hidden rounded-2xl border p-6 text-center backdrop-blur-md ${cardSurface} ${cardOutline}`}
                         style={{ backgroundImage: bloom }}
                         initial={{ opacity: 0, y: 12 }}
                         animate={{ opacity: 1, y: 0 }}
@@ -45,7 +45,7 @@ export function InfoPage({
                     >
                         <div className="pointer-events-none absolute -right-10 top-0 h-24 w-24 rounded-full bg-white/10 blur-3xl" />
                         <h3 className={`text-xl font-semibold ${textColor}`}>{block.title}</h3>
-                        <p className={`mt-2 text-sm ${subText}`}>{block.body}</p>
+                        <p className={`mt-3 text-sm leading-relaxed ${subText}`}>{block.body}</p>
                     </motion.article>
                 ))}
             </div>
