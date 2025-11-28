@@ -10,6 +10,7 @@ import { GlassNavbar } from './GlassNavbar'
 import { StarrySky } from './StarrySky'
 import { InfoPage } from './InfoPage'
 import { Sidebar } from './Sidebar'
+import { MobileSidebar } from './MobileSidebar'
 import { Breadcrumbs } from './Breadcrumbs'
 import { Typewriter } from './Typewriter'
 import { ViewSwitcher, type ViewMode } from './ViewSwitcher'
@@ -54,10 +55,17 @@ function App() {
   const [currentFolderId, setCurrentFolderId] = useState<string>('root-1')
   const [viewMode, setViewMode] = useState<ViewMode>('grid')
   const [showHero, setShowHero] = useState(true)
+  const [isMobileSidebarOpen, setIsMobileSidebarOpen] = useState(false)
   const progress = useMotionValue(0)
   const progressText = useTransform(progress, (v) => `${Math.round(v)}%`)
   const pointerX = useMotionValue(0)
   const pointerY = useMotionValue(0)
+
+  // Function to skip/dismiss hero
+  const skipHero = () => {
+    setShowHero(false)
+  }
+
   // start progress animation on mount
   useEffect(() => {
     animate(progress, 100, { duration: 7, ease: 'linear' })
@@ -69,9 +77,41 @@ function App() {
     return () => window.removeEventListener('hashchange', handleHash)
   }, [])
 
+  // Auto-dismiss hero after 7 seconds
   useEffect(() => {
     const timer = setTimeout(() => setShowHero(false), 7000)
     return () => clearTimeout(timer)
+  }, [])
+
+  // Dismiss hero on scroll
+  useEffect(() => {
+    if (!showHero) return
+
+    const handleScroll = () => {
+      if (window.scrollY > 50) {
+        skipHero()
+      }
+    }
+
+    window.addEventListener('scroll', handleScroll, { passive: true })
+    return () => window.removeEventListener('scroll', handleScroll)
+  }, [showHero])
+
+  // ⌘K / Ctrl+K keyboard shortcut for search
+  useEffect(() => {
+    const handleKeyDown = (event: KeyboardEvent) => {
+      if ((event.metaKey || event.ctrlKey) && event.key === 'k') {
+        event.preventDefault()
+        const searchInput = document.querySelector('input[type="text"][placeholder="Search..."]') as HTMLInputElement
+        if (searchInput) {
+          searchInput.focus()
+          searchInput.select()
+        }
+      }
+    }
+
+    window.addEventListener('keydown', handleKeyDown)
+    return () => window.removeEventListener('keydown', handleKeyDown)
   }, [])
 
   const toggleTheme = () => {
@@ -137,10 +177,11 @@ function App() {
             {page === 'home' ? (
               <>
                 <motion.div
-                  className="relative overflow-hidden"
+                  className="relative overflow-hidden cursor-pointer"
                   initial={{ height: '500px' }}
                   animate={{ height: showHero ? '500px' : '0px' }}
                   transition={{ duration: 1.2, ease: 'easeInOut' }}
+                  onClick={skipHero}
                 >
                   <AnimatePresence>
                     {showHero && (
@@ -151,7 +192,21 @@ function App() {
                         exit={{ opacity: 0, y: -30 }}
                         transition={{ duration: 1.2, ease: 'easeInOut' }}
                       >
-                        <div className="space-y-8 text-center">
+                        <div className="space-y-8 text-center relative">
+                          {/* Skip Button */}
+                          <motion.button
+                            initial={{ opacity: 0 }}
+                            animate={{ opacity: 1 }}
+                            transition={{ delay: 1, duration: 0.5 }}
+                            onClick={skipHero}
+                            className="absolute -top-4 right-0 flex items-center gap-2 rounded-full border border-white/10 bg-white/5 px-4 py-2 text-xs font-medium text-slate-400 backdrop-blur-sm transition-all hover:border-white/20 hover:bg-white/10 hover:text-white"
+                          >
+                            Skip
+                            <svg width="12" height="12" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round">
+                              <path d="M13 17l5-5-5-5M6 17l5-5-5-5" />
+                            </svg>
+                          </motion.button>
+
                           <motion.p
                             initial={{ opacity: 0, y: 10 }}
                             animate={{ opacity: 1, y: 0 }}
@@ -214,6 +269,16 @@ function App() {
                               {progressText}
                             </motion.div>
                           </div>
+
+                          {/* Hint text */}
+                          <motion.p
+                            initial={{ opacity: 0 }}
+                            animate={{ opacity: 1 }}
+                            transition={{ delay: 2, duration: 0.5 }}
+                            className="text-xs text-slate-500 mt-4"
+                          >
+                            Click anywhere or scroll to continue
+                          </motion.p>
                         </div>
                       </motion.div>
                     )}
@@ -221,6 +286,16 @@ function App() {
                 </motion.div>
 
                 <div className="flex flex-col gap-6 md:flex-row md:items-start">
+                  {/* Mobile Sidebar Drawer */}
+                  <MobileSidebar
+                    nodes={mockBookmarkTree}
+                    currentFolderId={currentFolderId}
+                    onSelectFolder={setCurrentFolderId}
+                    isOpen={isMobileSidebarOpen}
+                    onClose={() => setIsMobileSidebarOpen(false)}
+                  />
+
+                  {/* Desktop Sidebar */}
                   <Sidebar
                     nodes={mockBookmarkTree}
                     currentFolderId={currentFolderId}
@@ -229,114 +304,158 @@ function App() {
 
                   <div className="flex-1 space-y-6">
                     <div className="flex items-center justify-between rounded-xl border border-white/5 bg-white/[0.02] px-4 py-3 backdrop-blur-sm">
-                      <Breadcrumbs
-                        path={getPath(mockBookmarkTree, currentFolderId) || []}
-                        onSelectFolder={setCurrentFolderId}
-                      />
+                      <div className="flex items-center gap-3">
+                        {/* Hamburger Menu Button (Mobile Only) */}
+                        <button
+                          onClick={() => setIsMobileSidebarOpen(true)}
+                          className="flex h-8 w-8 items-center justify-center rounded-lg text-slate-400 transition-colors hover:bg-white/5 hover:text-white md:hidden"
+                          aria-label="Open menu"
+                        >
+                          <svg width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round">
+                            <line x1="3" y1="12" x2="21" y2="12" />
+                            <line x1="3" y1="6" x2="21" y2="6" />
+                            <line x1="3" y1="18" x2="21" y2="18" />
+                          </svg>
+                        </button>
+                        <Breadcrumbs
+                          path={getPath(mockBookmarkTree, currentFolderId) || []}
+                          onSelectFolder={setCurrentFolderId}
+                        />
+                      </div>
                       <ViewSwitcher currentView={viewMode} onViewChange={setViewMode} />
                     </div>
 
                     {viewMode === 'graph' ? (
                       <div className="h-[600px] rounded-xl overflow-hidden border border-white/5 bg-white/[0.02] backdrop-blur-xl">
                         <GraphView
-                          data={graphData} 
-                          width={1000} 
-                          height={600} 
+                          data={graphData}
+                          width={1000}
+                          height={600}
                           focusNodeId={currentFolderId}
                           onNodeClick={setCurrentFolderId}
                         />
                       </div>
                     ) : (
-                    <section className={`backdrop-blur-xl rounded-xl border border-white/5 bg-white/[0.02] p-4 ${viewMode === 'grid' ? 'grid gap-4 sm:grid-cols-2 lg:grid-cols-3' : 'flex flex-col gap-3'}`}>
-                      {(() => {
-                        const currentFolder = findNode(mockBookmarkTree, currentFolderId)
-                        const bookmarks = currentFolder?.children?.filter((c) => c.type === 'bookmark') || []
-                        const folders = currentFolder?.children?.filter((c) => c.type === 'folder') || []
+                      <section className={`backdrop-blur-xl rounded-xl border border-white/5 bg-white/[0.02] p-4 ${viewMode === 'grid' ? 'grid gap-4 sm:grid-cols-2 lg:grid-cols-3' : 'flex flex-col gap-3'}`}>
+                        {(() => {
+                          const currentFolder = findNode(mockBookmarkTree, currentFolderId)
+                          const bookmarks = currentFolder?.children?.filter((c) => c.type === 'bookmark') || []
+                          const folders = currentFolder?.children?.filter((c) => c.type === 'folder') || []
 
-                        // If searching, search globally (simplified for MVP: searching current folder structure)
-                        // For a real app, you'd likely want a global search index.
-                        // Here, let's just filter the current view if there's a query, 
-                        // OR we could implement a global search function. 
-                        // Let's stick to current folder filtering for now to match the "Explorer" vibe,
-                        // or maybe global search is better? 
-                        // Let's do: if search query exists, show flat list of ALL matching bookmarks.
+                          // If searching, search globally (simplified for MVP: searching current folder structure)
+                          // For a real app, you'd likely want a global search index.
+                          // Here, let's just filter the current view if there's a query, 
+                          // OR we could implement a global search function. 
+                          // Let's stick to current folder filtering for now to match the "Explorer" vibe,
+                          // or maybe global search is better? 
+                          // Let's do: if search query exists, show flat list of ALL matching bookmarks.
 
-                        const displayNodes = [...folders, ...bookmarks]
+                          const displayNodes = [...folders, ...bookmarks]
 
-                        if (searchQuery) {
-                          const flatten = (nodes: BookmarkNode[]): BookmarkNode[] => {
-                            let acc: BookmarkNode[] = []
-                            for (const node of nodes) {
-                              if (node.type === 'bookmark') acc.push(node)
-                              if (node.children) acc = [...acc, ...flatten(node.children)]
+                          if (searchQuery) {
+                            const flatten = (nodes: BookmarkNode[]): BookmarkNode[] => {
+                              let acc: BookmarkNode[] = []
+                              for (const node of nodes) {
+                                if (node.type === 'bookmark') acc.push(node)
+                                if (node.children) acc = [...acc, ...flatten(node.children)]
+                              }
+                              return acc
                             }
-                            return acc
-                          }
-                          const allBookmarks = flatten(mockBookmarkTree)
-                          const q = searchQuery.toLowerCase()
-                          return allBookmarks
-                            .filter(b =>
-                              b.title.toLowerCase().includes(q) ||
-                              b.url?.toLowerCase().includes(q) ||
-                              b.tags?.some(t => t.toLowerCase().includes(q))
-                            )
-                            .map((bookmark, index) => {
-                              const Component = viewMode === 'grid' ? BookmarkCard : BookmarkListItem
-                              return (
-                                <Component
-                                  key={bookmark.id}
-                                  idleDelay={index * 0.05}
-                                  title={bookmark.title}
-                                  url={bookmark.url || '#'}
-                                  favicon={bookmark.favicon}
-                                  tags={bookmark.tags}
-                                />
+                            const allBookmarks = flatten(mockBookmarkTree)
+                            const q = searchQuery.toLowerCase()
+                            const searchResults = allBookmarks
+                              .filter(b =>
+                                b.title.toLowerCase().includes(q) ||
+                                b.url?.toLowerCase().includes(q) ||
+                                b.tags?.some(t => t.toLowerCase().includes(q))
                               )
-                            })
-                        }
 
-                        if (displayNodes.length === 0) {
-                          return (
-                            <div className="col-span-full py-12 text-center text-slate-500">
-                              <p>This folder is empty.</p>
-                            </div>
-                          )
-                        }
+                            if (searchResults.length === 0) {
+                              return (
+                                <div className="col-span-full py-16 text-center">
+                                  <svg width="48" height="48" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="1.5" strokeLinecap="round" strokeLinejoin="round" className="mx-auto mb-4 text-slate-600">
+                                    <circle cx="11" cy="11" r="8" />
+                                    <path d="m21 21-4.35-4.35" />
+                                  </svg>
+                                  <p className="text-slate-400 text-sm">No bookmarks found for "{searchQuery}"</p>
+                                  <p className="text-slate-600 text-xs mt-2">Try a different search term</p>
+                                </div>
+                              )
+                            }
 
-                        return displayNodes.map((node, index) => {
-                          if (node.type === 'folder') {
                             return (
-                              <motion.button
-                                key={node.id}
-                                onClick={() => setCurrentFolderId(node.id)}
-                                initial={{ opacity: 0, y: 10 }}
-                                animate={{ opacity: 1, y: 0 }}
-                                transition={{ delay: index * 0.05 }}
-                                className={`group flex gap-3 rounded-xl border border-white/5 bg-white/[0.02] p-4 transition-all hover:border-white/10 hover:bg-white/[0.05] ${
-                                  viewMode === 'grid' ? 'h-32 flex-col items-center justify-center' : 'items-center'
-                                }`}
-                              >
-                                <svg width="32" height="32" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="1.5" strokeLinecap="round" strokeLinejoin="round" className="text-indigo-300/70 transition-colors group-hover:text-indigo-300">
+                              <>
+                                <div className="col-span-full mb-2 flex items-center gap-2 text-xs text-slate-400">
+                                  <svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round">
+                                    <circle cx="11" cy="11" r="8" />
+                                    <path d="m21 21-4.35-4.35" />
+                                  </svg>
+                                  Found {searchResults.length} bookmark{searchResults.length !== 1 ? 's' : ''}
+                                </div>
+                                {searchResults.map((bookmark, index) => {
+                                  const Component = viewMode === 'grid' ? BookmarkCard : BookmarkListItem
+                                  return (
+                                    <Component
+                                      key={bookmark.id}
+                                      idleDelay={index * 0.05}
+                                      title={bookmark.title}
+                                      url={bookmark.url || '#'}
+                                      favicon={bookmark.favicon}
+                                      tags={bookmark.tags}
+                                      onTagClick={setSearchQuery}
+                                    />
+                                  )
+                                })}
+                              </>
+                            )
+                          }
+
+                          if (displayNodes.length === 0) {
+                            return (
+                              <div className="col-span-full py-16 text-center">
+                                <svg width="64" height="64" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="1" strokeLinecap="round" strokeLinejoin="round" className="mx-auto mb-4 text-slate-600">
                                   <path d="M22 19a2 2 0 0 1-2 2H4a2 2 0 0 1-2-2V5a2 2 0 0 1 2-2h5l2 3h9a2 2 0 0 1 2 2z" />
                                 </svg>
-                                <span className="text-sm font-medium text-slate-300 group-hover:text-white">{node.title}</span>
-                              </motion.button>
+                                <p className="text-slate-400 text-base font-medium mb-2">This folder is empty</p>
+                                <p className="text-slate-600 text-sm">No bookmarks or subfolders here yet</p>
+                              </div>
                             )
                           }
-                          const Component = viewMode === 'grid' ? BookmarkCard : BookmarkListItem
-                          return (
-                            <Component
-                              key={node.id}
-                              idleDelay={index * 0.05}
-                              title={node.title}
-                              url={node.url || '#'}
-                              favicon={node.favicon}
-                              tags={node.tags}
-                            />
-                          )
-                        })
-                      })()}
-                    </section>
+
+                          return displayNodes.map((node, index) => {
+                            if (node.type === 'folder') {
+                              return (
+                                <motion.button
+                                  key={node.id}
+                                  onClick={() => setCurrentFolderId(node.id)}
+                                  initial={{ opacity: 0, y: 10 }}
+                                  animate={{ opacity: 1, y: 0 }}
+                                  transition={{ delay: index * 0.05 }}
+                                  className={`group flex gap-3 rounded-xl border border-white/5 bg-white/[0.02] p-4 transition-all hover:border-white/10 hover:bg-white/[0.05] ${viewMode === 'grid' ? 'h-32 flex-col items-center justify-center' : 'items-center'
+                                    }`}
+                                >
+                                  <svg width="32" height="32" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="1.5" strokeLinecap="round" strokeLinejoin="round" className="text-indigo-300/70 transition-colors group-hover:text-indigo-300">
+                                    <path d="M22 19a2 2 0 0 1-2 2H4a2 2 0 0 1-2-2V5a2 2 0 0 1 2-2h5l2 3h9a2 2 0 0 1 2 2z" />
+                                  </svg>
+                                  <span className="text-sm font-medium text-slate-300 group-hover:text-white">{node.title}</span>
+                                </motion.button>
+                              )
+                            }
+                            const Component = viewMode === 'grid' ? BookmarkCard : BookmarkListItem
+                            return (
+                              <Component
+                                key={node.id}
+                                idleDelay={index * 0.05}
+                                title={node.title}
+                                url={node.url || '#'}
+                                favicon={node.favicon}
+                                tags={node.tags}
+                                onTagClick={setSearchQuery}
+                              />
+                            )
+                          })
+                        })()}
+                      </section>
                     )}
                   </div>
                 </div>

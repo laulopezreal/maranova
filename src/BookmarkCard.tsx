@@ -6,6 +6,7 @@ type BookmarkCardProps = {
   favicon?: string
   tags?: string[]
   idleDelay?: number
+  onTagClick?: (tag: string) => void
 }
 
 export function BookmarkCard({
@@ -14,6 +15,7 @@ export function BookmarkCard({
   favicon,
   tags,
   idleDelay = 0,
+  onTagClick,
 }: BookmarkCardProps) {
   const hostname = new URL(url).hostname.replace('www.', '')
 
@@ -59,12 +61,17 @@ export function BookmarkCard({
       {tags && tags.length > 0 && (
         <div className="mt-1 flex flex-wrap gap-1.5">
           {tags.map((tag) => (
-            <span
+            <button
               key={tag}
-              className="rounded-md bg-white/5 px-2 py-0.5 text-[10px] font-normal text-slate-400 transition-colors group-hover:bg-white/10 group-hover:text-slate-300"
+              onClick={(e) => {
+                e.preventDefault()
+                e.stopPropagation()
+                onTagClick?.(tag)
+              }}
+              className="cursor-pointer rounded-md bg-white/5 px-2 py-0.5 text-[10px] font-normal text-slate-400 transition-all hover:bg-indigo-500/20 hover:text-indigo-300 hover:scale-105 group-hover:bg-white/10 group-hover:text-slate-300"
             >
               #{tag}
-            </span>
+            </button>
           ))}
         </div>
       )}

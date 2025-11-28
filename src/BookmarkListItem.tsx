@@ -6,6 +6,7 @@ type BookmarkListItemProps = {
   favicon?: string
   tags?: string[]
   idleDelay?: number
+  onTagClick?: (tag: string) => void
 }
 
 export function BookmarkListItem({
@@ -14,6 +15,7 @@ export function BookmarkListItem({
   favicon,
   tags,
   idleDelay = 0,
+  onTagClick,
 }: BookmarkListItemProps) {
   const hostname = new URL(url).hostname.replace('www.', '')
 
@@ -35,10 +37,10 @@ export function BookmarkListItem({
       {/* Favicon */}
       <div className="flex h-10 w-10 shrink-0 items-center justify-center overflow-hidden rounded-lg bg-white/5 ring-1 ring-white/10 transition-colors group-hover:bg-white/10">
         {favicon ? (
-          <img 
-            src={favicon} 
-            alt="" 
-            className="h-6 w-6 object-cover opacity-80 transition-opacity group-hover:opacity-100" 
+          <img
+            src={favicon}
+            alt=""
+            className="h-6 w-6 object-cover opacity-80 transition-opacity group-hover:opacity-100"
           />
         ) : (
           <span className="text-sm font-medium text-slate-400">
@@ -61,12 +63,17 @@ export function BookmarkListItem({
         {tags && tags.length > 0 && (
           <div className="flex flex-wrap gap-1.5">
             {tags.map((tag) => (
-              <span
+              <button
                 key={tag}
-                className="rounded bg-white/5 px-1.5 py-0.5 text-[10px] font-normal text-slate-400 transition-colors group-hover:bg-white/10 group-hover:text-slate-300"
+                onClick={(e) => {
+                  e.preventDefault()
+                  e.stopPropagation()
+                  onTagClick?.(tag)
+                }}
+                className="cursor-pointer rounded bg-white/5 px-1.5 py-0.5 text-[10px] font-normal text-slate-400 transition-all hover:bg-indigo-500/20 hover:text-indigo-300 hover:scale-105 group-hover:bg-white/10 group-hover:text-slate-300"
               >
                 #{tag}
-              </span>
+              </button>
             ))}
           </div>
         )}
@@ -74,15 +81,15 @@ export function BookmarkListItem({
 
       {/* External link icon */}
       <div className="shrink-0 opacity-0 transition-opacity duration-300 group-hover:opacity-100">
-        <svg 
-          width="16" 
-          height="16" 
-          viewBox="0 0 24 24" 
-          fill="none" 
-          stroke="currentColor" 
-          strokeWidth="2" 
-          strokeLinecap="round" 
-          strokeLinejoin="round" 
+        <svg
+          width="16"
+          height="16"
+          viewBox="0 0 24 24"
+          fill="none"
+          stroke="currentColor"
+          strokeWidth="2"
+          strokeLinecap="round"
+          strokeLinejoin="round"
           className="text-slate-500 transition-colors group-hover:text-slate-300"
         >
           <path d="M7 17L17 7M17 7H7M17 7V17" />
