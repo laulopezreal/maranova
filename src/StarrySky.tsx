@@ -29,13 +29,27 @@ type WishStyle = React.CSSProperties & {
     '--wish-thickness'?: string;
 };
 
+type BubbleStyle = React.CSSProperties & {
+    '--bubble-drift'?: string;
+};
+
 interface StarrySkyProps {
     theme?: 'galaxy' | 'ocean';
+}
+
+interface Bubble {
+    left: number;
+    size: number;
+    delay: number;
+    duration: number;
+    drift: number;
+    blur: number;
 }
 
 export const StarrySky: React.FC<StarrySkyProps> = ({ theme = 'galaxy' }) => {
     const [stars, setStars] = useState<StarPoint[]>([]);
     const [shootingStars, setShootingStars] = useState<ShootingStar[]>([]);
+    const [bubbles, setBubbles] = useState<Bubble[]>([]);
 
     const generateSky = useCallback(() => {
         const vw = Math.max(document.documentElement.clientWidth, window.innerWidth || 0);
@@ -66,8 +80,18 @@ export const StarrySky: React.FC<StarrySkyProps> = ({ theme = 'galaxy' }) => {
             })(),
         }));
 
+        const newBubbles = Array.from({ length: 90 }, () => ({
+            left: Math.random() * vw,
+            size: 5 + Math.random() * 7,
+            delay: Math.random() * 1.5,
+            duration: 12 + Math.random() * 10,
+            drift: (Math.random() - 0.5) * 28,
+            blur: Math.random() * 1.2,
+        }));
+
         setStars(newStars);
         setShootingStars(newShootingStars);
+        setBubbles(newBubbles);
     }, []);
 
     useEffect(() => {
@@ -75,6 +99,12 @@ export const StarrySky: React.FC<StarrySkyProps> = ({ theme = 'galaxy' }) => {
         window.addEventListener('resize', generateSky);
         return () => window.removeEventListener('resize', generateSky);
     }, [generateSky]);
+
+    useEffect(() => {
+        if (theme === 'ocean') {
+            generateSky();
+        }
+    }, [generateSky, theme]);
 
     // Theme-specific colors
     const starColor = theme === 'ocean' ? '#87CEEB' : 'white'; // Sky blue for ocean, white for galaxy
@@ -87,52 +117,74 @@ export const StarrySky: React.FC<StarrySkyProps> = ({ theme = 'galaxy' }) => {
 
     return (
         <div className="fixed inset-0 pointer-events-none z-0">
-            <svg id="sky">
-                {stars.map((star, index) => (
-                    <circle
-                        cx={star.cx}
-                        cy={star.cy}
-                        r={star.r}
-                        stroke="none"
-                        strokeWidth="0"
-                        fill={starColor}
-                        key={`star-${index}`}
-                        className="star"
-                        style={{
-                            animationDelay: `${star.delay}s`,
-                            animationDuration: `${star.duration}s`,
-                        }}
-                    />
-                ))}
-            </svg>
-            <div id="shootingstars">
-                {shootingStars.map((shootingStar, index) => {
-                    const wishStyle: WishStyle = {
-                        left: `${shootingStar.left}px`,
-                        top: `${shootingStar.top}px`,
-                        animationDelay: `${shootingStar.delay}s`,
-                        animationDuration: `${shootingStar.duration}s`,
-                        width: `${shootingStar.length}px`,
-                        '--wish-start': `${-160 * shootingStar.pathScale}px`,
-                        '--wish-mid-enter': `${-50 * shootingStar.pathScale}px`,
-                        '--wish-mid-exit': `${320 * shootingStar.pathScale}px`,
-                        '--wish-end': `${480 * shootingStar.pathScale}px`,
-                        '--wish-rotation': `${shootingStar.rotation}deg`,
-                        '--wish-thickness': `${shootingStar.thickness}px`,
-                    };
-                    return (
-                        <div
-                            key={`wish-${index}`}
-                            className="wish"
+            {theme === 'galaxy' ? (
+                <>
+                    <svg id="sky">
+                        {stars.map((star, index) => (
+                            <circle
+                                cx={star.cx}
+                                cy={star.cy}
+                                r={star.r}
+                                stroke="none"
+                                strokeWidth="0"
+                                fill={starColor}
+                                key={`star-${index}`}
+                                className="star"
+                                style={{
+                                    animationDelay: `${star.delay}s`,
+                                    animationDuration: `${star.duration}s`,
+                                }}
+                            />
+                        ))}
+                    </svg>
+                    <div id="shootingstars">
+                        {shootingStars.map((shootingStar, index) => {
+                            const wishStyle: WishStyle = {
+                                left: `${shootingStar.left}px`,
+                                top: `${shootingStar.top}px`,
+                                animationDelay: `${shootingStar.delay}s`,
+                                animationDuration: `${shootingStar.duration}s`,
+                                width: `${shootingStar.length}px`,
+                                '--wish-start': `${-160 * shootingStar.pathScale}px`,
+                                '--wish-mid-enter': `${-50 * shootingStar.pathScale}px`,
+                                '--wish-mid-exit': `${320 * shootingStar.pathScale}px`,
+                                '--wish-end': `${480 * shootingStar.pathScale}px`,
+                                '--wish-rotation': `${shootingStar.rotation}deg`,
+                                '--wish-thickness': `${shootingStar.thickness}px`,
+                            };
+                            return (
+                                <div
+                                    key={`wish-${index}`}
+                                    className="wish"
+                                    style={{
+                                        ...wishStyle,
+                                        background: shootingStarGradient,
+                                        filter: shootingStarShadow,
+                                    }}
+                                />
+                            );
+                        })}
+                    </div>
+                </>
+            ) : (
+                <div className="ocean-bubbles" key={`bubbles-${theme}`}>
+                    {bubbles.map((bubble, index) => (
+                        <span
+                            key={`bubble-${index}`}
+                            className="bubble"
                             style={{
-                                ...wishStyle,
-                                background: shootingStarGradient,
-                                filter: shootingStarShadow,
-                            }}
+                                left: `${bubble.left}px`,
+                                width: `${bubble.size}px`,
+                                height: `${bubble.size}px`,
+                                animationDelay: `${bubble.delay}s`,
+                                animationDuration: `${bubble.duration}s`,
+                                filter: `blur(${bubble.blur}px)`,
+                                '--bubble-drift': `${bubble.drift}px`,
+                            } as BubbleStyle}
                         />
-                    );
-                })}
-            </div>
+                    ))}
+                </div>
+            )}
         </div>
     );
 };

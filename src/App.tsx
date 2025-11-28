@@ -60,6 +60,17 @@ function App() {
   const progressText = useTransform(progress, (v) => `${Math.round(v)}%`)
   const pointerX = useMotionValue(0)
   const pointerY = useMotionValue(0)
+  const isOcean = theme === 'ocean'
+  const backgroundGradient = isOcean
+    ? 'linear-gradient(180deg, #dff4ff 0%, #c9e7ff 45%, #e9f7ff 100%)'
+    : 'linear-gradient(180deg, #0a0a1f, #0f172a)'
+  const heroAccent = isOcean ? 'text-sky-800/80' : 'text-indigo-300/80'
+  const ringColor = isOcean ? 'text-sky-900/20' : 'text-white/10'
+  const panelSurface = isOcean
+    ? 'border-sky-900/15 bg-white/70 shadow-[0_18px_48px_rgba(12,74,110,0.12)] backdrop-blur-xl'
+    : 'border-white/5 bg-white/[0.02] backdrop-blur-xl'
+  const panelHover = isOcean ? 'hover:border-sky-900/25 hover:bg-white/85' : 'hover:border-white/10 hover:bg-white/[0.05]'
+  const mutedText = isOcean ? 'text-slate-600' : 'text-slate-500'
 
   // Function to skip/dismiss hero
   const skipHero = () => {
@@ -144,17 +155,13 @@ function App() {
 
   return (
     <motion.div
-      className={`relative min-h-screen overflow-hidden ${theme === 'galaxy' ? 'text-white' : 'text-gray-900'}`}
+      className={`relative min-h-screen overflow-hidden theme-${theme} ${isOcean ? 'text-[#0b2348]' : 'text-white'}`}
       style={{
-        background: theme === 'galaxy'
-          ? 'linear-gradient(180deg, #0a0a1f, #0f172a)'
-          : 'linear-gradient(180deg, #f8f9fa, #e8eef2)'
+        background: backgroundGradient
       }}
       initial={false}
       animate={{
-        background: theme === 'galaxy'
-          ? 'linear-gradient(180deg, #0a0a1f, #0f172a)'
-          : 'linear-gradient(180deg, #f8f9fa, #e8eef2)'
+        background: backgroundGradient
       }}
       transition={{ duration: 0.9, ease: 'easeInOut' }}
       onMouseMove={handlePointerMove}
@@ -165,9 +172,9 @@ function App() {
       <div className="relative z-10 flex min-h-screen flex-col">
         <GlassNavbar
           theme={theme}
-          onToggleTheme={toggleTheme}
           currentPage={page}
           onNavigate={navigate}
+          onToggleTheme={toggleTheme}
           searchQuery={searchQuery}
           onSearchChange={setSearchQuery}
         />
@@ -211,7 +218,8 @@ function App() {
                             initial={{ opacity: 0, y: 10 }}
                             animate={{ opacity: 1, y: 0 }}
                             transition={{ duration: 0.6, delay: 0.2 }}
-                            className="text-xs font-medium uppercase tracking-[0.4em] text-indigo-300/80"
+                            className={`text-xs font-medium uppercase tracking-[0.4em] ${isOcean ? 'text-sky-800/70' : 'text-indigo-300/80'
+                              }`}
                           >
                             Curate. Collect. Connect.
                           </motion.p>
@@ -219,7 +227,10 @@ function App() {
                             initial={{ opacity: 0, y: 10 }}
                             animate={{ opacity: 1, y: 0 }}
                             transition={{ duration: 0.6, delay: 0.3 }}
-                            className="text-5xl font-semibold leading-tight tracking-tight md:text-7xl bg-gradient-to-b from-white to-white/60 bg-clip-text text-transparent"
+                            className={`text-5xl font-semibold leading-tight tracking-tight md:text-7xl bg-clip-text text-transparent ${isOcean
+                              ? 'bg-gradient-to-b from-[#0b2348] to-[#1e4a73]/80'
+                              : 'bg-gradient-to-b from-white to-white/60'
+                              }`}
                           >
                             <Typewriter text="Bookmarks, reimagined." delay={800} speed={150} />
                           </motion.h1>
@@ -227,47 +238,52 @@ function App() {
                             initial={{ opacity: 0, y: 10 }}
                             animate={{ opacity: 1, y: 0 }}
                             transition={{ duration: 0.6, delay: 0.4 }}
-                            className="mx-auto max-w-2xl text-lg font-light text-slate-400 md:text-xl leading-relaxed"
+                            className={`mx-auto max-w-2xl text-lg font-light leading-relaxed ${isOcean ? 'text-slate-600 md:text-xl' : 'text-slate-400 md:text-xl'
+                              }`}
                           >
-                            A calmer command center for every link that matters. Organize,
-                            tag, and rediscover your web with ease.
+                            A calmer command center for every link that matters. Organize, tag, and rediscover your web with ease.
                           </motion.p>
 
-                          <div className="mx-auto mt-8 w-16 h-16 relative">
-                            <svg className="w-16 h-16 -rotate-90" viewBox="0 0 36 36">
-                              <circle
-                                cx="18"
-                                cy="18"
-                                r="16"
-                                fill="none"
-                                stroke="currentColor"
-                                strokeWidth="2"
-                                className="text-white/10"
-                              />
-                              <motion.circle
-                                cx="18"
-                                cy="18"
-                                r="16"
-                                fill="none"
-                                stroke="url(#gradient)"
-                                strokeWidth="2"
-                                strokeLinecap="round"
-                                initial={{ pathLength: 0 }}
-                                animate={{ pathLength: 1 }}
-                                transition={{ duration: 7, ease: 'linear' }}
-                                strokeDasharray="100.53"
-                                strokeDashoffset="0"
-                              />
-                              <defs>
-                                <linearGradient id="gradient" x1="0%" y1="0%" x2="100%" y2="0%">
-                                  <stop offset="0%" stopColor="#6366f1" />
-                                  <stop offset="100%" stopColor="#60a5fa" />
-                                </linearGradient>
-                              </defs>
-                            </svg>
-                            <motion.div className="absolute inset-0 flex items-center justify-center text-sm font-normal text-white" >
-                              {progressText}
-                            </motion.div>
+                          <div className={`mx-auto mt-8 h-16 w-16 rounded-full p-2 shadow-[0_25px_60px_rgba(0,0,0,0.08)] backdrop-blur-xl ${panelSurface}`}>
+                            <div className="relative h-full w-full">
+                              <svg className="h-full w-full -rotate-90" viewBox="0 0 36 36">
+                                <circle
+                                  cx="18"
+                                  cy="18"
+                                  r="16"
+                                  fill="none"
+                                  stroke="currentColor"
+                                  strokeWidth="2"
+                                  className={ringColor}
+                                />
+                                <motion.circle
+                                  cx="18"
+                                  cy="18"
+                                  r="16"
+                                  fill="none"
+                                  stroke="url(#gradient)"
+                                  strokeWidth="2"
+                                  strokeLinecap="round"
+                                  initial={{ pathLength: 0 }}
+                                  animate={{ pathLength: 1 }}
+                                  transition={{ duration: 7, ease: 'linear' }}
+                                  strokeDasharray="100.53"
+                                  strokeDashoffset="0"
+                                />
+                                <defs>
+                                  <linearGradient id="gradient" x1="0%" y1="0%" x2="100%" y2="0%">
+                                    <stop offset="0%" stopColor={isOcean ? '#0ea5e9' : '#6366f1'} />
+                                    <stop offset="100%" stopColor={isOcean ? '#1d4ed8' : '#60a5fa'} />
+                                  </linearGradient>
+                                </defs>
+                              </svg>
+                              <motion.div
+                                className={`absolute inset-0 flex items-center justify-center text-sm font-normal ${isOcean ? 'text-[#0b2348]' : 'text-white'
+                                  }`}
+                              >
+                                {progressText}
+                              </motion.div>
+                            </div>
                           </div>
 
                           {/* Hint text */}
@@ -300,15 +316,16 @@ function App() {
                     nodes={mockBookmarkTree}
                     currentFolderId={currentFolderId}
                     onSelectFolder={setCurrentFolderId}
+                    theme={theme}
                   />
 
                   <div className="flex-1 space-y-6">
-                    <div className="flex items-center justify-between rounded-xl border border-white/5 bg-white/[0.02] px-4 py-3 backdrop-blur-sm">
+                    <div className={`flex items-center justify-between rounded-xl px-4 py-3 ${panelSurface}`}>
                       <div className="flex items-center gap-3">
                         {/* Hamburger Menu Button (Mobile Only) */}
                         <button
                           onClick={() => setIsMobileSidebarOpen(true)}
-                          className="flex h-8 w-8 items-center justify-center rounded-lg text-slate-400 transition-colors hover:bg-white/5 hover:text-white md:hidden"
+                          className={`flex h-8 w-8 items-center justify-center rounded-lg transition-colors md:hidden ${isOcean ? 'text-slate-500 hover:bg-sky-900/10 hover:text-sky-900' : 'text-slate-400 hover:bg-white/5 hover:text-white'}`}
                           aria-label="Open menu"
                         >
                           <svg width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round">
@@ -320,13 +337,14 @@ function App() {
                         <Breadcrumbs
                           path={getPath(mockBookmarkTree, currentFolderId) || []}
                           onSelectFolder={setCurrentFolderId}
+                          theme={theme}
                         />
                       </div>
                       <ViewSwitcher currentView={viewMode} onViewChange={setViewMode} />
                     </div>
 
                     {viewMode === 'graph' ? (
-                      <div className="h-[600px] rounded-xl overflow-hidden border border-white/5 bg-white/[0.02] backdrop-blur-xl">
+                      <div className={`h-[600px] rounded-xl overflow-hidden ${panelSurface}`}>
                         <GraphView
                           data={graphData}
                           width={1000}
@@ -336,22 +354,13 @@ function App() {
                         />
                       </div>
                     ) : (
-                      <section className={`backdrop-blur-xl rounded-xl border border-white/5 bg-white/[0.02] p-4 ${viewMode === 'grid' ? 'grid gap-4 sm:grid-cols-2 lg:grid-cols-3' : 'flex flex-col gap-3'}`}>
+                      <section className={`rounded-xl p-4 ${panelSurface} ${viewMode === 'grid' ? 'grid gap-4 sm:grid-cols-2 lg:grid-cols-3' : 'flex flex-col gap-3'}`}>
                         {(() => {
                           const currentFolder = findNode(mockBookmarkTree, currentFolderId)
                           const bookmarks = currentFolder?.children?.filter((c) => c.type === 'bookmark') || []
                           const folders = currentFolder?.children?.filter((c) => c.type === 'folder') || []
 
-                          // If searching, search globally (simplified for MVP: searching current folder structure)
-                          // For a real app, you'd likely want a global search index.
-                          // Here, let's just filter the current view if there's a query, 
-                          // OR we could implement a global search function. 
-                          // Let's stick to current folder filtering for now to match the "Explorer" vibe,
-                          // or maybe global search is better? 
-                          // Let's do: if search query exists, show flat list of ALL matching bookmarks.
-
                           const displayNodes = [...folders, ...bookmarks]
-
                           if (searchQuery) {
                             const flatten = (nodes: BookmarkNode[]): BookmarkNode[] => {
                               let acc: BookmarkNode[] = []
@@ -403,6 +412,7 @@ function App() {
                                       favicon={bookmark.favicon}
                                       tags={bookmark.tags}
                                       onTagClick={setSearchQuery}
+                                      theme={theme}
                                     />
                                   )
                                 })}
@@ -431,13 +441,13 @@ function App() {
                                   initial={{ opacity: 0, y: 10 }}
                                   animate={{ opacity: 1, y: 0 }}
                                   transition={{ delay: index * 0.05 }}
-                                  className={`group flex gap-3 rounded-xl border border-white/5 bg-white/[0.02] p-4 transition-all hover:border-white/10 hover:bg-white/[0.05] ${viewMode === 'grid' ? 'h-32 flex-col items-center justify-center' : 'items-center'
+                                  className={`group flex gap-3 rounded-xl p-4 transition-all ${panelSurface} ${panelHover} ${viewMode === 'grid' ? 'h-32 flex-col items-center justify-center' : 'items-center'
                                     }`}
                                 >
-                                  <svg width="32" height="32" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="1.5" strokeLinecap="round" strokeLinejoin="round" className="text-indigo-300/70 transition-colors group-hover:text-indigo-300">
+                                  <svg width="32" height="32" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="1.5" strokeLinecap="round" strokeLinejoin="round" className={`${isOcean ? 'text-sky-700 group-hover:text-sky-800' : 'text-indigo-300/70 transition-colors group-hover:text-indigo-300'}`}>
                                     <path d="M22 19a2 2 0 0 1-2 2H4a2 2 0 0 1-2-2V5a2 2 0 0 1 2-2h5l2 3h9a2 2 0 0 1 2 2z" />
                                   </svg>
-                                  <span className="text-sm font-medium text-slate-300 group-hover:text-white">{node.title}</span>
+                                  <span className={`text-sm font-medium transition-colors ${isOcean ? 'text-[#0b2348] group-hover:text-sky-900' : 'text-slate-300 group-hover:text-white'}`}>{node.title}</span>
                                 </motion.button>
                               )
                             }
@@ -451,24 +461,25 @@ function App() {
                                 favicon={node.favicon}
                                 tags={node.tags}
                                 onTagClick={setSearchQuery}
+                                theme={theme}
                               />
                             )
                           })
                         })()}
                       </section>
-                    )}
+                    )
+                    }
                   </div>
                 </div>
 
-                <section className="rounded-3xl border border-white/5 bg-white/[0.02] px-8 py-12 text-left shadow-2xl backdrop-blur-xl">
+                <section className={`rounded-3xl px-8 py-12 text-left shadow-2xl backdrop-blur-xl ${panelSurface}`}>
                   <div className="flex flex-col gap-4 md:flex-row md:items-end md:justify-between">
                     <div>
-                      <p className="text-xs font-medium uppercase tracking-[0.3em] text-indigo-300/70">
+                      <p className={`text-xs font-medium uppercase tracking-[0.3em] ${heroAccent}`}>
                         Orbit notes
                       </p>
-                      <h2 className="mt-2 text-3xl font-bold tracking-tight text-white/90">About, Docs, Terms</h2>
                     </div>
-                    <span className="text-xs text-slate-500 max-w-xs text-right hidden md:block">
+                    <span className={`text-xs max-w-xs text-right hidden md:block ${mutedText}`}>
                       Maranova = mare (sea) + nova (new star).<br />Two moods, one calm surface.
                     </span>
                   </div>
@@ -478,13 +489,13 @@ function App() {
                       const bloom =
                         theme === 'galaxy'
                           ? 'radial-gradient(circle at 20% 20%, rgba(129, 140, 248, 0.08), transparent 50%)'
-                          : 'radial-gradient(circle at 80% 20%, rgba(34, 211, 238, 0.08), transparent 50%)'
+                          : 'radial-gradient(circle at 80% 20%, rgba(12, 74, 110, 0.08), transparent 50%)'
 
                       return (
                         <motion.article
                           id={section.id}
                           key={section.id}
-                          className="group relative overflow-hidden rounded-2xl border border-white/5 bg-white/[0.03] p-6 transition-all duration-300 hover:border-white/10 hover:bg-white/[0.06] hover:shadow-xl"
+                          className={`group relative overflow-hidden rounded-2xl transition-all duration-300 ${panelSurface} ${panelHover}`}
                           style={{ backgroundImage: bloom }}
                           initial={{ opacity: 0, y: 12 }}
                           animate={{ opacity: 1, y: 0 }}
@@ -495,19 +506,19 @@ function App() {
                         >
                           <div className="pointer-events-none absolute -right-10 top-0 h-32 w-32 rounded-full bg-white/5 blur-3xl transition-opacity duration-500 group-hover:bg-white/10" />
                           <div className="flex items-center justify-between gap-2">
-                            <h3 className="text-lg font-semibold text-white/90">{section.title}</h3>
-                            <span className="rounded-full border border-white/10 bg-white/5 px-2.5 py-0.5 text-[10px] uppercase tracking-wider text-white/50">
+                            <h3 className={`text-lg font-semibold ${isOcean ? 'text-[#0b2348]' : 'text-white/90'}`}>{section.title}</h3>
+                            <span className={`rounded-full px-2.5 py-0.5 text-[10px] uppercase tracking-wider ${isOcean ? 'border-sky-900/20 bg-white/70 text-sky-900' : 'border-white/10 bg-white/5 text-white/50'}`}>
                               {section.id}
                             </span>
                           </div>
-                          <p className="mt-4 text-sm leading-relaxed text-slate-400">{section.blurb}</p>
-                          <ul className="mt-6 space-y-2.5 text-sm text-slate-400">
+                          <p className={`mt-4 text-sm leading-relaxed ${mutedText}`}>{section.blurb}</p>
+                          <ul className={`mt-6 space-y-2.5 text-sm ${mutedText}`}>
                             {section.highlights.map((item) => (
                               <li
                                 key={item}
                                 className="flex items-center gap-3"
                               >
-                                <span className="h-1 w-1 rounded-full bg-indigo-400/70" />
+                                <span className={`${isOcean ? 'bg-sky-600/60' : 'bg-indigo-400/70'} h-1 w-1 rounded-full`} />
                                 <span className="leading-snug">{item}</span>
                               </li>
                             ))}
@@ -518,10 +529,10 @@ function App() {
                               event.preventDefault()
                               navigate(section.id as Page)
                             }}
-                            className="mt-6 inline-flex items-center gap-2 text-sm font-medium text-indigo-300 transition-colors hover:text-indigo-200"
+                            className={`mt-6 inline-flex items-center gap-2 text-sm font-medium transition-colors ${isOcean ? 'text-sky-800 hover:text-sky-900' : 'text-indigo-300 hover:text-indigo-200'}`}
                           >
                             Read more
-                            <span className="text-indigo-300/50">→</span>
+                            <span className={`${isOcean ? 'text-sky-800/60' : 'text-indigo-300/50'}`}>→</span>
                           </motion.a>
                         </motion.article>
                       )
@@ -531,11 +542,12 @@ function App() {
               </>
             ) : (
               <InfoPage page={page} theme={theme} onNavigateHome={() => navigate('home')} />
-            )}
-          </div>
-        </main>
-      </div>
-    </motion.div>
+            )
+            }
+          </div >
+        </main >
+      </div >
+    </motion.div >
   )
 }
 
