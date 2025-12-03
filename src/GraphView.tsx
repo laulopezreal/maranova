@@ -2,7 +2,7 @@ import { useEffect, useRef, useState } from 'react';
 import * as d3 from 'd3';
 import type { GraphData, GraphNode as BaseGraphNode } from './utils/bookmarkToGraph';
 
-interface GraphNode extends d3.SimulationNodeDatum, BaseGraphNode {}
+interface GraphNode extends d3.SimulationNodeDatum, BaseGraphNode { }
 
 interface Link extends d3.SimulationLinkDatum<GraphNode> {
   source: string | GraphNode;
@@ -37,7 +37,7 @@ const GraphView = ({ data, width = 800, height = 600, focusNodeId, onNodeClick }
 
     // Create gradient definitions
     const defs = svg.append("defs");
-    
+
     // Gradient for nodes
     const gradient = defs.append("radialGradient")
       .attr("id", "node-gradient");
@@ -95,9 +95,9 @@ const GraphView = ({ data, width = 800, height = 600, focusNodeId, onNodeClick }
       .join("g") as d3.Selection<SVGGElement, GraphNode, SVGGElement, unknown>;
 
     node.call(d3.drag<SVGGElement, GraphNode>()
-        .on("start", dragstarted)
-        .on("drag", dragged)
-        .on("end", dragended));
+      .on("start", dragstarted)
+      .on("drag", dragged)
+      .on("end", dragended));
 
     // Add circles to nodes
     node.append("circle")
@@ -107,13 +107,13 @@ const GraphView = ({ data, width = 800, height = 600, focusNodeId, onNodeClick }
       .attr("stroke-width", 3)
       .attr("filter", "drop-shadow(0 0 10px rgba(167, 139, 250, 0.5))")
       .style("cursor", "pointer")
-      .on("click", function(_event, d) {
+      .on("click", function (_event, d) {
         _event.stopPropagation();
         if (onNodeClick) {
           onNodeClick(d.id);
         }
       })
-      .on("mouseenter", function(_event, d) {
+      .on("mouseenter", function (_event, d) {
         hoveredIdsRef.current.add(d.id);
         d3.select(this)
           .transition()
@@ -123,7 +123,7 @@ const GraphView = ({ data, width = 800, height = 600, focusNodeId, onNodeClick }
         simulationRef.current?.alpha(0.08).restart();
         setHoveredNode(d.title);
       })
-      .on("mouseleave", function(_event, d) {
+      .on("mouseleave", function (_event, d) {
         hoveredIdsRef.current.delete(d.id);
         d3.select(this)
           .transition()
@@ -144,12 +144,14 @@ const GraphView = ({ data, width = 800, height = 600, focusNodeId, onNodeClick }
       .attr("font-weight", "500")
       .attr("pointer-events", "none")
       .style("user-select", "none")
-      .each(function(d) {
+      .each(function (d) {
         // Split text into multiple lines if needed
         const text = d3.select(this);
         const words = d.title.split(/\s+/);
-        const maxLength = Math.floor((d.size - 16) * 2 / 8);
-        
+        const TEXT_PADDING = 16;
+        const AVG_CHAR_WIDTH = 8;
+        const maxLength = Math.floor((d.size - TEXT_PADDING) * 2 / AVG_CHAR_WIDTH);
+
         if (d.title.length > maxLength && words.length > 1) {
           text.text(null);
           words.forEach((word, i) => {
@@ -165,8 +167,8 @@ const GraphView = ({ data, width = 800, height = 600, focusNodeId, onNodeClick }
     simulation.on("tick", () => {
       link
         .attr("x1", d => {
-          const source = (typeof d.source === 'string' ? nodes.find(n => n.id === d.source) : d.source) as GraphNode;
-          const target = (typeof d.target === 'string' ? nodes.find(n => n.id === d.target) : d.target) as GraphNode;
+          const source = d.source as GraphNode;
+          const target = d.target as GraphNode;
           if (!source || !target) return 0;
           const dx = (target.x || 0) - (source.x || 0);
           const dy = (target.y || 0) - (source.y || 0);
@@ -176,8 +178,8 @@ const GraphView = ({ data, width = 800, height = 600, focusNodeId, onNodeClick }
           return (source.x || 0) + dx * ratio;
         })
         .attr("y1", d => {
-          const source = (typeof d.source === 'string' ? nodes.find(n => n.id === d.source) : d.source) as GraphNode;
-          const target = (typeof d.target === 'string' ? nodes.find(n => n.id === d.target) : d.target) as GraphNode;
+          const source = d.source as GraphNode;
+          const target = d.target as GraphNode;
           if (!source || !target) return 0;
           const dx = (target.x || 0) - (source.x || 0);
           const dy = (target.y || 0) - (source.y || 0);
@@ -187,8 +189,8 @@ const GraphView = ({ data, width = 800, height = 600, focusNodeId, onNodeClick }
           return (source.y || 0) + dy * ratio;
         })
         .attr("x2", d => {
-          const source = (typeof d.source === 'string' ? nodes.find(n => n.id === d.source) : d.source) as GraphNode;
-          const target = (typeof d.target === 'string' ? nodes.find(n => n.id === d.target) : d.target) as GraphNode;
+          const source = d.source as GraphNode;
+          const target = d.target as GraphNode;
           if (!source || !target) return 0;
           const dx = (target.x || 0) - (source.x || 0);
           const dy = (target.y || 0) - (source.y || 0);
@@ -198,8 +200,8 @@ const GraphView = ({ data, width = 800, height = 600, focusNodeId, onNodeClick }
           return (target.x || 0) - dx * ratio;
         })
         .attr("y2", d => {
-          const source = (typeof d.source === 'string' ? nodes.find(n => n.id === d.source) : d.source) as GraphNode;
-          const target = (typeof d.target === 'string' ? nodes.find(n => n.id === d.target) : d.target) as GraphNode;
+          const source = d.source as GraphNode;
+          const target = d.target as GraphNode;
           if (!source || !target) return 0;
           const dx = (target.x || 0) - (source.x || 0);
           const dy = (target.y || 0) - (source.y || 0);
@@ -270,8 +272,8 @@ const GraphView = ({ data, width = 800, height = 600, focusNodeId, onNodeClick }
 
   return (
     <div className="relative w-full h-full flex items-center justify-center">
-      <svg 
-        ref={svgRef} 
+      <svg
+        ref={svgRef}
         className="w-full h-full"
         style={{ maxWidth: width, maxHeight: height }}
       />

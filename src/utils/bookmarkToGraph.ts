@@ -1,11 +1,17 @@
 import type { BookmarkNode } from '../mockData'
 
 export interface GraphNode {
+  /** Unique identifier for the node */
   id: string
+  /** Size of the node circle */
   size: number
+  /** Group ID for color coding */
   group?: number
+  /** Type of node: folder or bookmark */
   type: 'folder' | 'bookmark'
+  /** Display title of the node */
   title: string
+  /** URL for bookmark nodes */
   url?: string
 }
 
@@ -33,7 +39,7 @@ export function bookmarksToGraphData(bookmarks: BookmarkNode[]): GraphData {
   function traverse(node: BookmarkNode, parentId?: string, depth: number = 0) {
     // Determine node group based on tags or folder
     let group: number | undefined
-    
+
     if (node.type === 'bookmark' && node.tags && node.tags.length > 0) {
       // Group bookmarks by their first tag
       const primaryTag = node.tags[0]
@@ -49,7 +55,7 @@ export function bookmarksToGraphData(bookmarks: BookmarkNode[]): GraphData {
     // Determine node size
     // Folders are larger, especially root folders
     // Bookmarks are smaller
-    const size = node.type === 'folder' 
+    const size = node.type === 'folder'
       ? (depth === 0 ? 45 : 35)  // Root folders bigger
       : 25 // Bookmarks are smaller
 

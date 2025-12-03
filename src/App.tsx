@@ -1,4 +1,4 @@
-import { type MouseEvent, useEffect, useMemo, useState } from 'react'
+import { type MouseEvent, useEffect, useMemo, useState, useRef } from 'react'
 import { AnimatePresence, motion, useMotionValue, useTransform, animate } from 'framer-motion'
 import GraphView from './GraphView'
 import './App.css'
@@ -108,15 +108,16 @@ function App() {
     return () => window.removeEventListener('scroll', handleScroll)
   }, [showHero])
 
+  const searchInputRef = useRef<HTMLInputElement>(null)
+
   // ⌘K / Ctrl+K keyboard shortcut for search
   useEffect(() => {
     const handleKeyDown = (event: KeyboardEvent) => {
       if ((event.metaKey || event.ctrlKey) && event.key === 'k') {
         event.preventDefault()
-        const searchInput = document.querySelector('input[type="text"][placeholder="Search..."]') as HTMLInputElement
-        if (searchInput) {
-          searchInput.focus()
-          searchInput.select()
+        if (searchInputRef.current) {
+          searchInputRef.current.focus()
+          searchInputRef.current.select()
         }
       }
     }
@@ -153,6 +154,19 @@ function App() {
   // Convert bookmarks to graph data
   const graphData = useMemo(() => bookmarksToGraphData(mockBookmarkTree), [])
 
+  // Flatten bookmarks for search
+  const allBookmarks = useMemo(() => {
+    const flatten = (nodes: BookmarkNode[]): BookmarkNode[] => {
+      let acc: BookmarkNode[] = []
+      for (const node of nodes) {
+        if (node.type === 'bookmark') acc.push(node)
+        if (node.children) acc = [...acc, ...flatten(node.children)]
+      }
+      return acc
+    }
+    return flatten(mockBookmarkTree)
+  }, [])
+
   return (
     <motion.div
       className={`relative min-h-screen overflow-hidden theme-${theme} ${isOcean ? 'text-[#0b2348]' : 'text-white'}`}
@@ -171,6 +185,7 @@ function App() {
 
       <div className="relative z-10 flex min-h-screen flex-col">
         <GlassNavbar
+          ref={searchInputRef}
           theme={theme}
           currentPage={page}
           onNavigate={navigate}
@@ -362,15 +377,6 @@ function App() {
 
                           const displayNodes = [...folders, ...bookmarks]
                           if (searchQuery) {
-                            const flatten = (nodes: BookmarkNode[]): BookmarkNode[] => {
-                              let acc: BookmarkNode[] = []
-                              for (const node of nodes) {
-                                if (node.type === 'bookmark') acc.push(node)
-                                if (node.children) acc = [...acc, ...flatten(node.children)]
-                              }
-                              return acc
-                            }
-                            const allBookmarks = flatten(mockBookmarkTree)
                             const q = searchQuery.toLowerCase()
                             const searchResults = allBookmarks
                               .filter(b =>
@@ -489,13 +495,13 @@ function App() {
                       const bloom =
                         theme === 'galaxy'
                           ? 'radial-gradient(circle at 20% 20%, rgba(129, 140, 248, 0.08), transparent 50%)'
-                          : 'radial-gradient(circle at 80% 20%, rgba(12, 74, 110, 0.08), transparent 50%)'
+                          : 'radial-gradient(circle at 80% 20%, rgba(34, 211, 238, 0.08), transparent 50%)'
 
                       return (
                         <motion.article
                           id={section.id}
                           key={section.id}
-                          className={`group relative overflow-hidden rounded-2xl transition-all duration-300 ${panelSurface} ${panelHover}`}
+                          className="group relative overflow-hidden rounded-2xl border border-white/5 bg-white/[0.03] p-6 transition-all duration-300 hover:border-white/10 hover:bg-white/[0.06] hover:shadow-xl"
                           style={{ backgroundImage: bloom }}
                           initial={{ opacity: 0, y: 12 }}
                           animate={{ opacity: 1, y: 0 }}
@@ -507,18 +513,18 @@ function App() {
                           <div className="pointer-events-none absolute -right-10 top-0 h-32 w-32 rounded-full bg-white/5 blur-3xl transition-opacity duration-500 group-hover:bg-white/10" />
                           <div className="flex items-center justify-between gap-2">
                             <h3 className={`text-lg font-semibold ${isOcean ? 'text-[#0b2348]' : 'text-white/90'}`}>{section.title}</h3>
-                            <span className={`rounded-full px-2.5 py-0.5 text-[10px] uppercase tracking-wider ${isOcean ? 'border-sky-900/20 bg-white/70 text-sky-900' : 'border-white/10 bg-white/5 text-white/50'}`}>
+                            <span className={`rounded-full border px-2.5 py-0.5 text-[10px] uppercase tracking-wider ${isOcean ? 'border-sky-900/20 bg-white/70 text-sky-900' : 'border-white/10 bg-white/5 text-white/50'}`}>
                               {section.id}
                             </span>
                           </div>
-                          <p className={`mt-4 text-sm leading-relaxed ${mutedText}`}>{section.blurb}</p>
-                          <ul className={`mt-6 space-y-2.5 text-sm ${mutedText}`}>
+                          <p className={`mt-4 text-sm leading-relaxed ${isOcean ? 'text-slate-600' : 'text-slate-400'}`}>{section.blurb}</p>
+                          <ul className={`mt-6 space-y-2.5 text-sm ${isOcean ? 'text-slate-600' : 'text-slate-400'}`}>
                             {section.highlights.map((item) => (
                               <li
                                 key={item}
                                 className="flex items-center gap-3"
                               >
-                                <span className={`${isOcean ? 'bg-sky-600/60' : 'bg-indigo-400/70'} h-1 w-1 rounded-full`} />
+                                <span className={`h-1 w-1 rounded-full ${isOcean ? 'bg-sky-600/60' : 'bg-indigo-400/70'}`} />
                                 <span className="leading-snug">{item}</span>
                               </li>
                             ))}
