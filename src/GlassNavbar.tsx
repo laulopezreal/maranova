@@ -1,5 +1,5 @@
 import { motion } from 'framer-motion'
-import { useState } from 'react'
+import { useState, forwardRef } from 'react'
 import { useAuth } from './auth/AuthContext'
 
 type NavPage = 'home' | 'about' | 'docs' | 'terms'
@@ -13,14 +13,14 @@ type GlassNavbarProps = {
   onSearchChange: (query: string) => void
 }
 
-export function GlassNavbar({
+export const GlassNavbar = forwardRef<HTMLInputElement, GlassNavbarProps>(({
   theme,
   currentPage,
   onToggleTheme,
   onNavigate,
   searchQuery,
   onSearchChange,
-}: GlassNavbarProps) {
+}, ref) => {
   const { user, status, login, logout } = useAuth()
   const [isBusyProvider, setIsBusyProvider] = useState<string | null>(null)
 
@@ -62,9 +62,8 @@ export function GlassNavbar({
       >
         <div className="flex items-center gap-3 whitespace-nowrap text-sm font-semibold tracking-wide">
           <span
-            className={`flex h-8 w-8 items-center justify-center rounded-full ${
-              isOcean ? 'bg-sky-900/10 text-sky-800' : 'bg-indigo-500/10 text-indigo-300'
-            }`}
+            className={`flex h-8 w-8 items-center justify-center rounded-full ${isOcean ? 'bg-sky-900/10 text-sky-800' : 'bg-indigo-500/10 text-indigo-300'
+              }`}
           >
             <img src="/olas-del-mar.png" alt="Maranova logo" className="h-6 w-6 object-contain" />
           </span>
@@ -103,6 +102,7 @@ export function GlassNavbar({
         <div className="flex min-w-0 flex-1 flex-wrap items-center justify-end gap-3">
           <div className="relative hidden md:block">
             <input
+              ref={ref}
               type="text"
               placeholder="Search..."
               value={searchQuery}
@@ -145,11 +145,10 @@ export function GlassNavbar({
                   <motion.button
                     key={provider.id}
                     onClick={() => handleLogin(provider.id)}
-                    className={`rounded-full px-4 py-1.5 text-[12px] font-medium transition-all ${
-                      isOcean
+                    className={`rounded-full px-4 py-1.5 text-[12px] font-medium transition-all ${isOcean
                         ? 'border-sky-900/15 bg-white/80 text-slate-700 hover:border-sky-900/25 hover:bg-white'
                         : `border border-white/5 bg-white/5 text-slate-300 hover:border-white/10 ${provider.accent}`
-                    }`}
+                      }`}
                     disabled={status === 'authenticating'}
                     type="button"
                     whileTap={{ scale: 0.96 }}
@@ -163,11 +162,10 @@ export function GlassNavbar({
 
           <motion.button
             onClick={onToggleTheme}
-            className={`ml-2 flex h-8 w-8 items-center justify-center rounded-full transition-colors ${
-              isOcean
+            className={`ml-2 flex h-8 w-8 items-center justify-center rounded-full transition-colors ${isOcean
                 ? 'border-sky-900/15 bg-white/80 text-slate-700 hover:border-sky-900/25 hover:bg-white'
                 : 'border border-white/5 bg-white/5 text-slate-400 hover:bg-white/10 hover:text-white'
-            }`}
+              }`}
             type="button"
             whileTap={{ scale: 0.9 }}
           >
@@ -181,4 +179,4 @@ export function GlassNavbar({
       </motion.nav>
     </motion.header>
   )
-}
+})
